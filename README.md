@@ -23,8 +23,8 @@ Abaixo estão as representações técnicas da estrutura do sistema.
 
 ## 🛠️ Tech Stack
 
-* **Linguagem:** Python 3.12+
-* **Framework:** Django 5.x & Django REST Framework (DRF)
+* **Linguagem:** Python 3.12
+* **Framework:** Django 6.0 & Django REST Framework (DRF)
 * **Autenticação:** JWT (JSON Web Token) com verificação via E-mail/SMS.
 * **Banco de Dados:** PostgreSQL.
 * **Integração Financeira:** PagBank API.
