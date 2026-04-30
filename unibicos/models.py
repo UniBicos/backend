@@ -31,6 +31,10 @@ status_pagamento_choices = [
 def valida_cpf(value):
     if not re.match(r'^\d{11}$', value):
         raise ValidationError('O CPF deve conter exatamente 11 dígitos e somente números.')
+    
+def valida_cnpj(value):
+    if not re.match(r'^\d{20}$', value):
+        raise ValidationError('O CNPJ deve conter exatamente 20 dígitos e somente números.')
 
 class DadosCadModel(models.Model):
     id_user_cad = models.ForeignKey(
@@ -78,7 +82,8 @@ class Usuario(DadosCadModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     id_instituicao = models.ForeignKey(InstituicoesEnsino, on_delete=models.CASCADE)
     nome = models.CharField(max_length=50)
-    cpf = models.CharField(max_length=11, validators=[valida_cpf])
+    cpf = models.CharField(max_length=11, validators=[valida_cpf], null=True, blank=True)
+    cnpj = models.CharField(max_length=11, validators=[valida_cnpj], null=True, blank=True)
     telefone = models.CharField(max_length=15)
     matricula = models.CharField(max_length=50, null=True, blank=True)
 
@@ -216,7 +221,7 @@ class Pedidos(DadosCadModel):
 class PedidoProdutos(DadosCadModel):
     id_pedido_produto = models.AutoField(primary_key=True)
     id_pedido = models.ForeignKey(Pedidos, on_delete=models.CASCADE)
-    id_produto = models.ForeignKey(Produtos, on_delete=models.CASCADE)
+    id_produto = models.ForeignKey(Produtos, on_delete=models.CASCADE, related_name='itens_pedido')
     quantidade = models.IntegerField(default=1)
     preco_un = models.IntegerField(default=0)
     
