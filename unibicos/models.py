@@ -1,13 +1,12 @@
 import re
-from django.db import models
-from django.core.exceptions import ValidationError
-from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator, MaxValueValidator
-import uuid
 
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 
 status_pedido_choices = [
-    ('CRIADO', 'CRIADO'), 
+    ('CRIADO', 'CRIADO'),
     ('ACEITO_PELO_VENDEDOR', 'ACEITO_PELO_VENDEDOR'),
     ('EM_PREPARO', 'EM_PREPARO'),
     ('ENTREGA_ACEITA', 'ENTREGA_ACEITA'),
@@ -17,8 +16,8 @@ status_pedido_choices = [
 ]
 
 tipos_perfil_choices = [
-    ('ENTREGADOR', 'ENTREGADOR'), 
-    ('LOJA', 'LOJA'), 
+    ('ENTREGADOR', 'ENTREGADOR'),
+    ('LOJA', 'LOJA'),
 ]
 
 status_pagamento_choices = [
@@ -28,13 +27,16 @@ status_pagamento_choices = [
     ('CANCELADO', 'CANCELADO'),
 ]
 
+
 def valida_cpf(value):
     if not re.match(r'^\d{11}$', value):
         raise ValidationError('O CPF deve conter exatamente 11 dígitos e somente números.')
-    
+
+
 def valida_cnpj(value):
     if not re.match(r'^\d{20}$', value):
         raise ValidationError('O CNPJ deve conter exatamente 20 dígitos e somente números.')
+
 
 class DadosCadModel(models.Model):
     id_user_cad = models.ForeignKey(
@@ -48,6 +50,7 @@ class DadosCadModel(models.Model):
 
     class Meta:
         abstract = True
+
 
 class InstituicoesEnsino(DadosCadModel):
     id_instituicao = models.AutoField(primary_key=True)
@@ -65,9 +68,12 @@ class InstituicoesEnsino(DadosCadModel):
     def __str__(self):
         return self.sigla + ' - ' + self.nome
 
+
 class EmailsInstituicao(DadosCadModel):
     id_email_instituicao = models.AutoField(primary_key=True)
-    id_instituicao = models.ForeignKey(InstituicoesEnsino, on_delete=models.CASCADE, related_name='emails_instituicao')
+    id_instituicao = models.ForeignKey(
+        InstituicoesEnsino, on_delete=models.CASCADE, related_name='emails_instituicao'
+    )
     email = models.EmailField(max_length=200)
 
     class Meta:
@@ -77,6 +83,7 @@ class EmailsInstituicao(DadosCadModel):
 
     def __str__(self):
         return self.email
+
 
 class Usuario(DadosCadModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -95,12 +102,13 @@ class Usuario(DadosCadModel):
     def __str__(self):
         return self.nome + ' - ' + self.cpf
 
+
 class Movimentacoes(DadosCadModel):
     id_movimentacoes = models.AutoField(primary_key=True)
     id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     tipo_perfil = models.CharField(max_length=20, default='LOJA', choices=tipos_perfil_choices)
     valor = models.IntegerField(default=0)
-    
+
     class Meta:
         db_table = 'tb_movimentacoes'
         ordering = ['id_movimentacoes']
@@ -108,6 +116,7 @@ class Movimentacoes(DadosCadModel):
 
     def __str__(self):
         return str(self.id_usuario) + ' - ' + self.tipo_perfil
+
 
 class Compradores(DadosCadModel):
     id_comprador = models.AutoField(primary_key=True)
@@ -121,10 +130,11 @@ class Compradores(DadosCadModel):
     def __str__(self):
         return str(self.id_comprador)
 
+
 class Lojas(DadosCadModel):
     id_loja = models.AutoField(primary_key=True)
     id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='lojas')
-    info_bancarias = models.CharField(max_length=120) 
+    info_bancarias = models.CharField(max_length=120)
     nome_fantasia = models.CharField(max_length=120)
     aberto = models.BooleanField(default=False)
     departamento = models.CharField(max_length=120, null=True, blank=True)
@@ -133,7 +143,7 @@ class Lojas(DadosCadModel):
         max_digits=2,
         decimal_places=1,
         validators=[MinValueValidator(0), MaxValueValidator(5)],
-        default=5.0
+        default=5.0,
     )
 
     class Meta:
@@ -144,19 +154,20 @@ class Lojas(DadosCadModel):
     def __str__(self):
         return self.nome_fantasia
 
+
 class Entregadores(DadosCadModel):
     id_entregador = models.AutoField(primary_key=True)
     id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='entregadores')
-    info_bancarias = models.CharField(max_length=120) 
+    info_bancarias = models.CharField(max_length=120)
     aberto = models.BooleanField(default=False)
     saldo_disponivel = models.IntegerField(default=0)
     avaliacao = models.DecimalField(
         max_digits=2,
         decimal_places=1,
         validators=[MinValueValidator(0), MaxValueValidator(5)],
-        default=5.0
+        default=5.0,
     )
-    
+
     class Meta:
         db_table = 'tb_entregadores'
         ordering = ['id_entregador']
@@ -164,6 +175,7 @@ class Entregadores(DadosCadModel):
 
     def __str__(self):
         return str(self.id_usuario)
+
 
 class Categorias(DadosCadModel):
     id_categoria = models.AutoField(primary_key=True)
@@ -177,6 +189,7 @@ class Categorias(DadosCadModel):
 
     def __str__(self):
         return self.nome_categoria
+
 
 class Produtos(DadosCadModel):
     id_produto = models.AutoField(primary_key=True)
@@ -196,15 +209,20 @@ class Produtos(DadosCadModel):
     def __str__(self):
         return self.nome_produto
 
+
 class Pedidos(DadosCadModel):
     id_pedido = models.AutoField(primary_key=True)
     id_cliente = models.ForeignKey(Compradores, on_delete=models.CASCADE)
     id_loja = models.ForeignKey(Lojas, on_delete=models.CASCADE)
-    id_entregador = models.ForeignKey(Entregadores, on_delete=models.CASCADE, null=True, blank=True)
+    id_entregador = models.ForeignKey(
+        Entregadores, on_delete=models.CASCADE, null=True, blank=True
+    )
     taxa_entrega = models.IntegerField(default=0)
     total_pedido = models.IntegerField(default=0)
-    status_pedido = models.CharField(max_length=20, default='CRIADO', choices=status_pedido_choices)
-    token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    status_pedido = models.CharField(
+        max_length=20, default='CRIADO', choices=status_pedido_choices
+    )
+    token = models.CharField(max_length=4, unique=True)
     sala_entrega = models.CharField(max_length=50, null=True, blank=True)
     bloco_entrega = models.CharField(max_length=100, null=True, blank=True)
     descricao_local = models.CharField(max_length=600, null=True, blank=True)
@@ -217,6 +235,12 @@ class Pedidos(DadosCadModel):
     def __str__(self):
         return str(self.id_pedido) + ' - R$ ' + str(self.total_pedido)
 
+    def save(self, *args, **kwargs):
+        if not self.token:
+            telefone = self.id_cliente.id_usuario.telefone
+            self.token = telefone[-4:]
+        super().save(*args, **kwargs)
+
 
 class PedidoProdutos(DadosCadModel):
     id_pedido_produto = models.AutoField(primary_key=True)
@@ -224,7 +248,7 @@ class PedidoProdutos(DadosCadModel):
     id_produto = models.ForeignKey(Produtos, on_delete=models.CASCADE, related_name='itens_pedido')
     quantidade = models.IntegerField(default=1)
     preco_un = models.IntegerField(default=0)
-    
+
     class Meta:
         db_table = 'tb_pedido_produtos'
         unique_together = ('id_pedido', 'id_produto')
@@ -234,11 +258,14 @@ class PedidoProdutos(DadosCadModel):
     def __str__(self):
         return str(self.id_pedido) + str(self.id_produto)
 
+
 class Pagamento(DadosCadModel):
     id_pagamento = models.AutoField(primary_key=True)
     id_pedido = models.OneToOneField(Pedidos, on_delete=models.CASCADE)
-    status_pagamento = models.CharField(max_length=20, default='AGUARDANDO_PAGAMENTO', choices=status_pagamento_choices)
-    
+    status_pagamento = models.CharField(
+        max_length=20, default='AGUARDANDO_PAGAMENTO', choices=status_pagamento_choices
+    )
+
     class Meta:
         db_table = 'tb_pagamentos'
         ordering = ['id_pagamento']
