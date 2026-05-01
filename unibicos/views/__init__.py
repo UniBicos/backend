@@ -6,3 +6,4 @@ from .movimentacoes import *
 from .pagamentos import *
 from .pedidos import *
 from .produtos import *
+from .stripe import stripe_webhook

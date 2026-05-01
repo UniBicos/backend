@@ -6,45 +6,53 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 status_pedido_choices = [
-    ('CRIADO', 'CRIADO'),
-    ('ACEITO_PELO_VENDEDOR', 'ACEITO_PELO_VENDEDOR'),
-    ('EM_PREPARO', 'EM_PREPARO'),
-    ('ENTREGA_ACEITA', 'ENTREGA_ACEITA'),
-    ('SAIU_PARA_ENTREGA', 'SAIU_PARA_ENTREGA'),
-    ('ENTREGUE', 'ENTREGUE'),
-    ('CANCELADO', 'CANCELADO'),
+    ("CRIADO", "CRIADO"),
+    ("ACEITO_PELO_VENDEDOR", "ACEITO_PELO_VENDEDOR"),
+    ("EM_PREPARO", "EM_PREPARO"),
+    ("ENTREGA_ACEITA", "ENTREGA_ACEITA"),
+    ("SAIU_PARA_ENTREGA", "SAIU_PARA_ENTREGA"),
+    ("ENTREGUE", "ENTREGUE"),
+    ("CANCELADO", "CANCELADO"),
 ]
 
 tipos_perfil_choices = [
-    ('ENTREGADOR', 'ENTREGADOR'),
-    ('LOJA', 'LOJA'),
+    ("ENTREGADOR", "ENTREGADOR"),
+    ("LOJA", "LOJA"),
 ]
 
 status_pagamento_choices = [
-    ('AGUARDANDO_PAGAMENTO', 'AGUARDANDO_PAGAMENTO'),
-    ('PAGO', 'PAGO'),
-    ('CONFIRMADO', 'CONFIRMADO'),
-    ('CANCELADO', 'CANCELADO'),
+    ("AGUARDANDO_PAGAMENTO", "AGUARDANDO_PAGAMENTO"),
+    ("PAGO", "PAGO"),
+    ("CONFIRMADO", "CONFIRMADO"),
+    ("CANCELADO", "CANCELADO"),
 ]
 
 
 def valida_cpf(value):
-    if not re.match(r'^\d{11}$', value):
-        raise ValidationError('O CPF deve conter exatamente 11 dígitos e somente números.')
+    if not re.match(r"^\d{11}$", value):
+        raise ValidationError(
+            "O CPF deve conter exatamente 11 dígitos e somente números."
+        )
 
 
 def valida_cnpj(value):
-    if not re.match(r'^\d{20}$', value):
-        raise ValidationError('O CNPJ deve conter exatamente 20 dígitos e somente números.')
+    if not re.match(r"^\d{20}$", value):
+        raise ValidationError(
+            "O CNPJ deve conter exatamente 20 dígitos e somente números."
+        )
 
 
 class DadosCadModel(models.Model):
     id_user_cad = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='%(class)s_user_cad'
+        User, on_delete=models.CASCADE, related_name="%(class)s_user_cad"
     )
     dt_cad = models.DateTimeField(auto_now_add=True)
     id_user_alt = models.ForeignKey(
-        User, on_delete=models.CASCADE, null=True, blank=True, related_name='%(class)s_user_alt'
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="%(class)s_user_alt",
     )
     dt_alt = models.DateTimeField(auto_now=True)
 
@@ -61,25 +69,25 @@ class InstituicoesEnsino(DadosCadModel):
     estado = models.CharField(max_length=40)
 
     class Meta:
-        db_table = 'tb_instituicoes_ensino'
-        ordering = ['nome']
-        verbose_name_plural = 'Instituições de Ensino'
+        db_table = "tb_instituicoes_ensino"
+        ordering = ["nome"]
+        verbose_name_plural = "Instituições de Ensino"
 
     def __str__(self):
-        return self.sigla + ' - ' + self.nome
+        return self.sigla + " - " + self.nome
 
 
 class EmailsInstituicao(DadosCadModel):
     id_email_instituicao = models.AutoField(primary_key=True)
     id_instituicao = models.ForeignKey(
-        InstituicoesEnsino, on_delete=models.CASCADE, related_name='emails_instituicao'
+        InstituicoesEnsino, on_delete=models.CASCADE, related_name="emails_instituicao"
     )
     email = models.EmailField(max_length=200)
 
     class Meta:
-        db_table = 'tb_emails_ensino'
-        ordering = ['email']
-        verbose_name_plural = 'Emails da Instituição'
+        db_table = "tb_emails_ensino"
+        ordering = ["email"]
+        verbose_name_plural = "Emails da Instituição"
 
     def __str__(self):
         return self.email
@@ -89,43 +97,51 @@ class Usuario(DadosCadModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     id_instituicao = models.ForeignKey(InstituicoesEnsino, on_delete=models.CASCADE)
     nome = models.CharField(max_length=50)
-    cpf = models.CharField(max_length=11, validators=[valida_cpf], null=True, blank=True)
-    cnpj = models.CharField(max_length=11, validators=[valida_cnpj], null=True, blank=True)
+    cpf = models.CharField(
+        max_length=11, validators=[valida_cpf], null=True, blank=True
+    )
+    cnpj = models.CharField(
+        max_length=11, validators=[valida_cnpj], null=True, blank=True
+    )
     telefone = models.CharField(max_length=15)
     matricula = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:
-        db_table = 'tb_usuario'
-        ordering = ['nome']
-        verbose_name_plural = 'Usuarios'
+        db_table = "tb_usuario"
+        ordering = ["nome"]
+        verbose_name_plural = "Usuarios"
 
     def __str__(self):
-        return self.nome + ' - ' + self.cpf
+        return self.nome + " - " + self.cpf
 
 
 class Movimentacoes(DadosCadModel):
     id_movimentacoes = models.AutoField(primary_key=True)
     id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    tipo_perfil = models.CharField(max_length=20, default='LOJA', choices=tipos_perfil_choices)
+    tipo_perfil = models.CharField(
+        max_length=20, default="LOJA", choices=tipos_perfil_choices
+    )
     valor = models.IntegerField(default=0)
 
     class Meta:
-        db_table = 'tb_movimentacoes'
-        ordering = ['id_movimentacoes']
-        verbose_name_plural = 'Movimentações'
+        db_table = "tb_movimentacoes"
+        ordering = ["id_movimentacoes"]
+        verbose_name_plural = "Movimentações"
 
     def __str__(self):
-        return str(self.id_usuario) + ' - ' + self.tipo_perfil
+        return str(self.id_usuario) + " - " + self.tipo_perfil
 
 
 class Compradores(DadosCadModel):
     id_comprador = models.AutoField(primary_key=True)
-    id_usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='comprador')
+    id_usuario = models.OneToOneField(
+        Usuario, on_delete=models.CASCADE, related_name="comprador"
+    )
 
     class Meta:
-        db_table = 'tb_compradores'
-        ordering = ['id_comprador']
-        verbose_name_plural = 'Compradores'
+        db_table = "tb_compradores"
+        ordering = ["id_comprador"]
+        verbose_name_plural = "Compradores"
 
     def __str__(self):
         return str(self.id_comprador)
@@ -133,8 +149,11 @@ class Compradores(DadosCadModel):
 
 class Lojas(DadosCadModel):
     id_loja = models.AutoField(primary_key=True)
-    id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='lojas')
-    info_bancarias = models.CharField(max_length=120)
+    id_usuario = models.ForeignKey(
+        Usuario, on_delete=models.CASCADE, related_name="lojas"
+    )
+    id_stripe = models.CharField(max_length=200, unique=True)
+    id_bancaria_stripe = models.CharField(max_length=120)
     nome_fantasia = models.CharField(max_length=120)
     aberto = models.BooleanField(default=False)
     departamento = models.CharField(max_length=120, null=True, blank=True)
@@ -145,11 +164,12 @@ class Lojas(DadosCadModel):
         validators=[MinValueValidator(0), MaxValueValidator(5)],
         default=5.0,
     )
+    saldo_disponivel = models.IntegerField(default=0)
 
     class Meta:
-        db_table = 'tb_lojas'
-        ordering = ['nome_fantasia']
-        verbose_name_plural = 'Lojas'
+        db_table = "tb_lojas"
+        ordering = ["nome_fantasia"]
+        verbose_name_plural = "Lojas"
 
     def __str__(self):
         return self.nome_fantasia
@@ -157,8 +177,11 @@ class Lojas(DadosCadModel):
 
 class Entregadores(DadosCadModel):
     id_entregador = models.AutoField(primary_key=True)
-    id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='entregadores')
-    info_bancarias = models.CharField(max_length=120)
+    id_usuario = models.ForeignKey(
+        Usuario, on_delete=models.CASCADE, related_name="entregadores"
+    )
+    id_stripe = models.CharField(max_length=200, unique=True)
+    id_bancaria_stripe = models.CharField(max_length=120)
     aberto = models.BooleanField(default=False)
     saldo_disponivel = models.IntegerField(default=0)
     avaliacao = models.DecimalField(
@@ -169,9 +192,9 @@ class Entregadores(DadosCadModel):
     )
 
     class Meta:
-        db_table = 'tb_entregadores'
-        ordering = ['id_entregador']
-        verbose_name_plural = 'Entregadores'
+        db_table = "tb_entregadores"
+        ordering = ["id_entregador"]
+        verbose_name_plural = "Entregadores"
 
     def __str__(self):
         return str(self.id_usuario)
@@ -183,9 +206,9 @@ class Categorias(DadosCadModel):
     icon = models.CharField(max_length=200)
 
     class Meta:
-        db_table = 'tb_categorias'
-        ordering = ['nome_categoria']
-        verbose_name_plural = 'Categorias'
+        db_table = "tb_categorias"
+        ordering = ["nome_categoria"]
+        verbose_name_plural = "Categorias"
 
     def __str__(self):
         return self.nome_categoria
@@ -193,18 +216,20 @@ class Categorias(DadosCadModel):
 
 class Produtos(DadosCadModel):
     id_produto = models.AutoField(primary_key=True)
-    id_loja = models.ForeignKey(Lojas, on_delete=models.CASCADE, related_name='produtos')
+    id_loja = models.ForeignKey(
+        Lojas, on_delete=models.CASCADE, related_name="produtos"
+    )
     id_categoria = models.ForeignKey(Categorias, on_delete=models.CASCADE)
     nome_produto = models.CharField(max_length=200)
-    imagem = models.ImageField(upload_to='produtos/')
+    imagem = models.ImageField(upload_to="produtos/")
     descricao = models.CharField(max_length=600)
     preco = models.IntegerField(default=0)
     disponivel = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'tb_produtos'
-        ordering = ['nome_produto']
-        verbose_name_plural = 'Produtos'
+        db_table = "tb_produtos"
+        ordering = ["nome_produto"]
+        verbose_name_plural = "Produtos"
 
     def __str__(self):
         return self.nome_produto
@@ -217,10 +242,11 @@ class Pedidos(DadosCadModel):
     id_entregador = models.ForeignKey(
         Entregadores, on_delete=models.CASCADE, null=True, blank=True
     )
+    id_stripe = models.CharField(max_length=200, unique=True, null=True, blank=True)
     taxa_entrega = models.IntegerField(default=0)
     total_pedido = models.IntegerField(default=0)
     status_pedido = models.CharField(
-        max_length=20, default='CRIADO', choices=status_pedido_choices
+        max_length=20, default="CRIADO", choices=status_pedido_choices
     )
     token = models.CharField(max_length=4, unique=True)
     sala_entrega = models.CharField(max_length=50, null=True, blank=True)
@@ -228,12 +254,12 @@ class Pedidos(DadosCadModel):
     descricao_local = models.CharField(max_length=600, null=True, blank=True)
 
     class Meta:
-        db_table = 'tb_pedidos'
-        ordering = ['id_pedido']
-        verbose_name_plural = 'Pedidos'
+        db_table = "tb_pedidos"
+        ordering = ["id_pedido"]
+        verbose_name_plural = "Pedidos"
 
     def __str__(self):
-        return str(self.id_pedido) + ' - R$ ' + str(self.total_pedido)
+        return str(self.id_pedido) + " - R$ " + str(self.total_pedido)
 
     def save(self, *args, **kwargs):
         if not self.token:
@@ -245,15 +271,17 @@ class Pedidos(DadosCadModel):
 class PedidoProdutos(DadosCadModel):
     id_pedido_produto = models.AutoField(primary_key=True)
     id_pedido = models.ForeignKey(Pedidos, on_delete=models.CASCADE)
-    id_produto = models.ForeignKey(Produtos, on_delete=models.CASCADE, related_name='itens_pedido')
+    id_produto = models.ForeignKey(
+        Produtos, on_delete=models.CASCADE, related_name="itens_pedido"
+    )
     quantidade = models.IntegerField(default=1)
     preco_un = models.IntegerField(default=0)
 
     class Meta:
-        db_table = 'tb_pedido_produtos'
-        unique_together = ('id_pedido', 'id_produto')
-        ordering = ['id_pedido_produto']
-        verbose_name_plural = 'Produtos de pedido'
+        db_table = "tb_pedido_produtos"
+        unique_together = ("id_pedido", "id_produto")
+        ordering = ["id_pedido_produto"]
+        verbose_name_plural = "Produtos de pedido"
 
     def __str__(self):
         return str(self.id_pedido) + str(self.id_produto)
@@ -262,14 +290,15 @@ class PedidoProdutos(DadosCadModel):
 class Pagamento(DadosCadModel):
     id_pagamento = models.AutoField(primary_key=True)
     id_pedido = models.OneToOneField(Pedidos, on_delete=models.CASCADE)
+    id_intent = models.CharField(max_length=200, unique=True)
     status_pagamento = models.CharField(
-        max_length=20, default='AGUARDANDO_PAGAMENTO', choices=status_pagamento_choices
+        max_length=20, default="AGUARDANDO_PAGAMENTO", choices=status_pagamento_choices
     )
 
     class Meta:
-        db_table = 'tb_pagamentos'
-        ordering = ['id_pagamento']
-        verbose_name_plural = 'Pagamentos'
+        db_table = "tb_pagamentos"
+        ordering = ["id_pagamento"]
+        verbose_name_plural = "Pagamentos"
 
     def __str__(self):
-        return str(self.id_pagamento) + ' - ' + self.status_pagamento
+        return str(self.id_pagamento) + " - " + self.status_pagamento
