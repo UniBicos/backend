@@ -1,7 +1,24 @@
 from rest_framework import routers
-from unibicos.views import ProdutosViewSet
+
+from unibicos.views import (
+    CompradoresViewSet,
+    EntregadoresViewSet,
+    InstituicoesEnsinoViewSet,
+    LojasViewSet,
+    MovimentacoesViewSet,
+    PagamentoViewSet,
+    PedidosViewSet,
+    ProdutosViewSet,
+)
 
 router = routers.DefaultRouter()
-router.register(r'produtos', ProdutosViewSet, basename='produtos')
+router.register(r'produtos', ProdutosViewSet)
+router.register(r'pedidos', PedidosViewSet)
+router.register(r'entregadores', EntregadoresViewSet)
+router.register(r'lojas', LojasViewSet)
+router.register(r'compradores', CompradoresViewSet)
+router.register(r'pagamentos', PagamentoViewSet)
+router.register(r'movimentacoes', MovimentacoesViewSet)
+router.register(r'instituicoes_ensino', InstituicoesEnsinoViewSet)
 
 urlpatterns = router.urls
