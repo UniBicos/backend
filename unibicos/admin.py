@@ -1,19 +1,21 @@
 from django.contrib import admin
 from django.db.models import Sum
+
 from .models import (
-    InstituicoesEnsino,
-    EmailsInstituicao,
-    Usuario,
-    Movimentacoes,
-    Compradores,
-    Lojas,
-    Entregadores,
     Categorias,
-    Produtos,
-    Pedidos,
-    PedidoProdutos,
+    Compradores,
+    EmailsInstituicao,
+    Entregadores,
+    InstituicoesEnsino,
+    Lojas,
+    Movimentacoes,
     Pagamento,
+    PedidoProdutos,
+    Pedidos,
+    Produtos,
+    Usuario,
 )
+
 
 class DadosCadForm(admin.ModelAdmin):
     readonly_fields = ['cad_por', 'alt_por']
@@ -56,10 +58,12 @@ class DadosCadForm(admin.ModelAdmin):
 
         formset.save()
 
+
 class PedidoProdutosInline(admin.TabularInline):
     model = PedidoProdutos
     extra = 1
     autocomplete_fields = ['id_produto']
+
 
 class InstituicoesEnsinoAdmin(DadosCadForm):
     list_display = ('sigla', 'nome', 'campus', 'cidade', 'estado')
@@ -68,22 +72,17 @@ class InstituicoesEnsinoAdmin(DadosCadForm):
     list_filter = ['estado']
 
     fieldsets = (
-        ('Dados Gerais', {
-            'fields': ('nome', 'sigla', 'campus')
-        }),
-        ('Localização', {
-            'fields': ('cidade', 'estado')
-        }),
-        ('Outros', {
-            'classes': ('collapse',),
-            'fields': ('id_user_cad', 'id_user_alt')
-        }),
+        ('Dados Gerais', {'fields': ('nome', 'sigla', 'campus')}),
+        ('Localização', {'fields': ('cidade', 'estado')}),
+        ('Outros', {'classes': ('collapse',), 'fields': ('id_user_cad', 'id_user_alt')}),
     )
+
 
 class EmailsInstituicaoAdmin(DadosCadForm):
     list_display = ('email', 'id_instituicao')
     search_fields = ['email']
     autocomplete_fields = ['id_instituicao']
+
 
 class UsuarioAdmin(DadosCadForm):
     list_display = ('nome', 'cpf', 'telefone', 'id_instituicao')
@@ -92,14 +91,19 @@ class UsuarioAdmin(DadosCadForm):
     readonly_fields = 'id_user_cad', 'id_user_alt'
 
     fieldsets = (
-        ('Dados Pessoais', {
-            'fields': (('user', 'nome', 'telefone'), ('cpf', 'cnpj'), ('id_instituicao', 'matricula'))
-        }),
-        ('Outros', {
-            'classes': ('collapse',),
-            'fields': ('id_user_cad', 'id_user_alt')
-        }),
+        (
+            'Dados Pessoais',
+            {
+                'fields': (
+                    ('user', 'nome', 'telefone'),
+                    ('cpf', 'cnpj'),
+                    ('id_instituicao', 'matricula'),
+                )
+            },
+        ),
+        ('Outros', {'classes': ('collapse',), 'fields': ('id_user_cad', 'id_user_alt')}),
     )
+
 
 class MovimentacoesAdmin(DadosCadForm):
     list_display = ('id_usuario', 'tipo_perfil', 'valor')
@@ -107,10 +111,12 @@ class MovimentacoesAdmin(DadosCadForm):
     search_fields = ['id_usuario__nome']
     autocomplete_fields = ['id_usuario']
 
+
 class CompradoresAdmin(DadosCadForm):
     list_display = ('id_comprador', 'id_usuario')
     search_fields = ['id_usuario__nome']
     autocomplete_fields = ['id_usuario']
+
 
 class LojasAdmin(DadosCadForm):
     list_display = ('nome_fantasia', 'id_usuario', 'aberto', 'avaliacao')
@@ -119,16 +125,11 @@ class LojasAdmin(DadosCadForm):
     autocomplete_fields = ['id_usuario']
 
     fieldsets = (
-        ('Loja', {
-            'fields': ('nome_fantasia', 'id_usuario')
-        }),
-        ('Informações', {
-            'fields': ('info_bancarias', 'departamento', 'localizacao')
-        }),
-        ('Status', {
-            'fields': ('aberto', 'avaliacao')
-        }),
+        ('Loja', {'fields': ('nome_fantasia', 'id_usuario')}),
+        ('Informações', {'fields': ('info_bancarias', 'departamento', 'localizacao')}),
+        ('Status', {'fields': ('aberto', 'avaliacao')}),
     )
+
 
 class EntregadoresAdmin(DadosCadForm):
     list_display = ('id_usuario', 'aberto', 'saldo_disponivel', 'avaliacao')
@@ -136,9 +137,11 @@ class EntregadoresAdmin(DadosCadForm):
     search_fields = ['id_usuario__nome']
     autocomplete_fields = ['id_usuario']
 
+
 class CategoriasAdmin(DadosCadForm):
     list_display = ('nome_categoria', 'icon')
     search_fields = ['nome_categoria']
+
 
 class ProdutosAdmin(DadosCadForm):
     list_display = ('nome_produto', 'id_loja', 'preco', 'disponivel')
@@ -147,16 +150,11 @@ class ProdutosAdmin(DadosCadForm):
     autocomplete_fields = ['id_loja', 'id_categoria']
 
     fieldsets = (
-        ('Produto', {
-            'fields': ('nome_produto', 'descricao', 'imagem')
-        }),
-        ('Relacionamentos', {
-            'fields': ('id_loja', 'id_categoria')
-        }),
-        ('Venda', {
-            'fields': ('preco', 'disponivel')
-        }),
+        ('Produto', {'fields': ('nome_produto', 'descricao', 'imagem')}),
+        ('Relacionamentos', {'fields': ('id_loja', 'id_categoria')}),
+        ('Venda', {'fields': ('preco', 'disponivel')}),
     )
+
 
 class PedidosAdmin(DadosCadForm):
     list_display = ('id_pedido', 'id_cliente', 'id_loja', 'status_pedido', 'total_pedido')
@@ -166,18 +164,10 @@ class PedidosAdmin(DadosCadForm):
     inlines = [PedidoProdutosInline]
 
     fieldsets = (
-        ('Pedido', {
-            'fields': ('id_cliente', 'id_loja', 'id_entregador')
-        }),
-        ('Valores', {
-            'fields': ('taxa_entrega', 'total_pedido')
-        }),
-        ('Entrega', {
-            'fields': ('sala_entrega', 'bloco_entrega', 'descricao_local')
-        }),
-        ('Status', {
-            'fields': ('status_pedido',)
-        }),
+        ('Pedido', {'fields': ('id_cliente', 'id_loja', 'id_entregador')}),
+        ('Valores', {'fields': ('taxa_entrega', 'total_pedido')}),
+        ('Entrega', {'fields': ('sala_entrega', 'bloco_entrega', 'descricao_local')}),
+        ('Status', {'fields': ('status_pedido',)}),
     )
 
     def save_model(self, request, obj, form, change):
@@ -190,17 +180,22 @@ class PedidosAdmin(DadosCadForm):
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
 
-        total = PedidoProdutos.objects.filter(id_pedido=form.instance).aggregate(
-            total=Sum('preco_un')
-        )['total'] or 0
+        total = (
+            PedidoProdutos.objects.filter(id_pedido=form.instance).aggregate(
+                total=Sum('preco_un')
+            )['total']
+            or 0
+        )
 
         form.instance.total_pedido = total
         form.instance.save()
+
 
 class PedidoProdutosAdmin(DadosCadForm):
     list_display = ('id_pedido', 'id_produto', 'quantidade', 'preco_un')
     search_fields = ['id_pedido__id_pedido', 'id_produto__nome_produto']
     autocomplete_fields = ['id_pedido', 'id_produto']
+
 
 class PagamentoAdmin(DadosCadForm):
     list_display = ('id_pagamento', 'id_pedido', 'status_pagamento')

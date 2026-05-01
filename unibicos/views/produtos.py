@@ -1,11 +1,10 @@
 from django.db.models import Count, Value
 from django.db.models.functions import Coalesce
-
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 
 from unibicos.models import Produtos
@@ -46,12 +45,9 @@ class ProdutosViewSet(viewsets.ViewSet):
                     'id_loja': {'type': 'integer'},
                     'id_categoria': {'type': 'integer'},
                     'disponivel': {'type': 'boolean'},
-                    'imagem': {
-                        'type': 'string',
-                        'format': 'binary'
-                    },
+                    'imagem': {'type': 'string', 'format': 'binary'},
                 },
-                'required': ['nome_produto', 'imagem']
+                'required': ['nome_produto', 'imagem'],
             }
         }
     )
@@ -72,7 +68,7 @@ class ProdutosViewSet(viewsets.ViewSet):
 
         request.data['id_user_alt'] = request.user.id
         serializer = self.serializer_class(produto, data=request.data, partial=True)
-        
+
         if serializer.is_valid():
             serializer.save()
             return Response({'message': 'Produto alterado com sucesso'})
@@ -86,7 +82,7 @@ class ProdutosViewSet(viewsets.ViewSet):
 
         produto.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-        
+
     @action(detail=False, methods=['get'])
     def mais_vendidos(self, request):
         queryset = Produtos.objects.all()
@@ -96,10 +92,7 @@ class ProdutosViewSet(viewsets.ViewSet):
             queryset = queryset.filter(id_loja=id_loja)
 
         queryset = queryset.annotate(
-            total_pedidos=Coalesce(
-                Count('itens_pedido__id_pedido', distinct=True),
-                Value(0)
-            )
+            total_pedidos=Coalesce(Count('itens_pedido__id_pedido', distinct=True), Value(0))
         ).order_by('-total_pedidos')
 
         return Response(ProdutosSerializer(queryset, many=True).data)
