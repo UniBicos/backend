@@ -1,5 +1,4 @@
-from pytz import timezone
-
+from datetime import datetime
 import stripe
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
@@ -38,7 +37,7 @@ class PagamentoViewSet(viewsets.ViewSet):
                 amount=amount,
                 currency="brl",
                 payment_method_types=["pix"],
-                transfer_group=f"ORDER_{request.user.id}_{timezone.now().timestamp()}",
+                transfer_group=f"ORDER_{request.user.id}_{datetime.now()}",
                 application_fee_amount=application_fee,
                 metadata={
                     "user_id": request.user.id,

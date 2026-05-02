@@ -83,7 +83,6 @@ class EmailsInstituicaoAdmin(DadosCadForm):
     search_fields = ['email']
     autocomplete_fields = ['id_instituicao']
 
-
 class UsuarioAdmin(DadosCadForm):
     list_display = ('nome', 'cpf', 'telefone', 'id_instituicao')
     search_fields = ['nome', 'cpf', 'telefone']
@@ -201,7 +200,6 @@ class PagamentoAdmin(DadosCadForm):
     list_display = ('id_pagamento', 'id_pedido', 'status_pagamento')
     list_filter = ('status_pagamento',)
     autocomplete_fields = ['id_pedido']
-
 
 admin.site.register(InstituicoesEnsino, InstituicoesEnsinoAdmin)
 admin.site.register(EmailsInstituicao, EmailsInstituicaoAdmin)

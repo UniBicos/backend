@@ -11,6 +11,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
     def to_representation(self, obj):
         return {
             'user': obj.user.id,
+            'email': obj.user.email,
             'id_instituicao': obj.id_instituicao.id_instituicao,
             'nome': obj.nome,
             'cpf': obj.cpf,

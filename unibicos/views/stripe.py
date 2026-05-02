@@ -221,7 +221,7 @@ def handle_dispute_created(charge):
         logger.error(f"Error handling dispute: {str(e)}", exc_info=True)
 
 
-# CLI: stripe listen --forward-to localhost:8000/webhook/stripe/
+# CLI: stripe listen --forward-to localhost:8000/webhook/stripe
 # Configurar em settings.py:
 # STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
 # STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET")

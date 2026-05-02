@@ -89,7 +89,7 @@ class EntregadoresViewSet(viewsets.ViewSet):
             return Response({"message": "Entregador alterado com sucesso"})
         return Response(serializer.errors, status=400)
 
-    def destroy(self, request, pk=None):
+    def destroy(self, _, pk=None):
         try:
             entregador = Entregadores.objects.get(id_entregador=pk)
         except Entregadores.DoesNotExist:
@@ -99,6 +99,6 @@ class EntregadoresViewSet(viewsets.ViewSet):
         return Response({"message": "Entregador deletado com sucesso"}, status=204)
 
     @action(detail=False, methods=["get"])
-    def disponiveis(self, request):
+    def disponiveis(self, _):
         queryset = Entregadores.objects.filter(aberto=True)
         return Response(self.get_serializer(queryset, many=True).data)

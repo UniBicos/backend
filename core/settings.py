@@ -31,7 +31,7 @@ SECRET_KEY = "django-insecure-qf_8y2^fet=sw&fjaxaa9-r90odrjy!c@lhu5$l(4lha6gcksu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "192.168.0.10"]
 
 
 # Application definition
@@ -141,6 +141,15 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-STRIPE_WEBHOOK_SECRET = env(
-    "STRIPE_WEBHOOK_SECRET", default="your_stripe_webhook_secret_here"
-)
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
+
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET")
+
+AUTH_USER_MODEL = "unibicos.Usuario"

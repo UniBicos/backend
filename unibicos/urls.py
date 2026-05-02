@@ -10,6 +10,7 @@ from unibicos.views import (
     PagamentoViewSet,
     PedidosViewSet,
     ProdutosViewSet,
+    UsuariosViewSet,
     stripe_webhook,
 )
 
@@ -22,6 +23,7 @@ router.register(r"compradores", CompradoresViewSet)
 router.register(r"pagamentos", PagamentoViewSet)
 router.register(r"movimentacoes", MovimentacoesViewSet)
 router.register(r"instituicoes_ensino", InstituicoesEnsinoViewSet)
+router.register(r"usuarios", UsuariosViewSet)
 
 urlpatterns = [
     path("webhook/stripe/", stripe_webhook, name="stripe_webhook"),

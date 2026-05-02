@@ -1,9 +1,12 @@
 import re
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from core import settings
+from core import settings
+from unibicos.managers import UsuarioManager
 
 status_pedido_choices = [
     ("CRIADO", "CRIADO"),
@@ -42,25 +45,62 @@ def valida_cnpj(value):
         )
 
 
-class DadosCadModel(models.Model):
+class BaseModel(models.Model):
     id_user_cad = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="%(class)s_user_cad"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="%(class)s_user_cad",
     )
     dt_cad = models.DateTimeField(auto_now_add=True)
+
     id_user_alt = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="%(class)s_user_alt",
     )
+
     dt_alt = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
 
 
-class InstituicoesEnsino(DadosCadModel):
+class Usuario(AbstractUser, BaseModel):
+    username = None
+    first_name = None
+    last_name = None
+
+    email = models.EmailField("Endereço de E-mail", max_length=200, unique=True)
+    nome = models.CharField("Nome Completo", max_length=255)
+
+    id_instituicao = models.ForeignKey(
+        "InstituicoesEnsino", on_delete=models.SET_NULL, null=True, blank=True
+    )
+    cpf = models.CharField(
+        max_length=11, validators=[valida_cpf], null=True, blank=True, unique=True
+    )
+    cnpj = models.CharField(
+        max_length=14, validators=[valida_cnpj], null=True, blank=True, unique=True
+    )
+    telefone = models.CharField(max_length=15)
+    matricula = models.CharField(max_length=50, null=True, blank=True)
+
+    objects = UsuarioManager()
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["nome"]
+
+    class Meta:
+        db_table = "tb_usuario"
+        verbose_name_plural = "Usuarios"
+
+    def __str__(self):
+        return self.email
+
+
+class InstituicoesEnsino(BaseModel):
     id_instituicao = models.AutoField(primary_key=True)
     nome = models.CharField(max_length=80)
     sigla = models.CharField(max_length=10)
@@ -77,7 +117,7 @@ class InstituicoesEnsino(DadosCadModel):
         return self.sigla + " - " + self.nome
 
 
-class EmailsInstituicao(DadosCadModel):
+class EmailsInstituicao(BaseModel):
     id_email_instituicao = models.AutoField(primary_key=True)
     id_instituicao = models.ForeignKey(
         InstituicoesEnsino, on_delete=models.CASCADE, related_name="emails_instituicao"
@@ -93,29 +133,7 @@ class EmailsInstituicao(DadosCadModel):
         return self.email
 
 
-class Usuario(DadosCadModel):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    id_instituicao = models.ForeignKey(InstituicoesEnsino, on_delete=models.CASCADE)
-    nome = models.CharField(max_length=50)
-    cpf = models.CharField(
-        max_length=11, validators=[valida_cpf], null=True, blank=True
-    )
-    cnpj = models.CharField(
-        max_length=11, validators=[valida_cnpj], null=True, blank=True
-    )
-    telefone = models.CharField(max_length=15)
-    matricula = models.CharField(max_length=50, null=True, blank=True)
-
-    class Meta:
-        db_table = "tb_usuario"
-        ordering = ["nome"]
-        verbose_name_plural = "Usuarios"
-
-    def __str__(self):
-        return self.nome + " - " + self.cpf
-
-
-class Movimentacoes(DadosCadModel):
+class Movimentacoes(BaseModel):
     id_movimentacoes = models.AutoField(primary_key=True)
     id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     tipo_perfil = models.CharField(
@@ -132,7 +150,7 @@ class Movimentacoes(DadosCadModel):
         return str(self.id_usuario) + " - " + self.tipo_perfil
 
 
-class Compradores(DadosCadModel):
+class Compradores(BaseModel):
     id_comprador = models.AutoField(primary_key=True)
     id_usuario = models.OneToOneField(
         Usuario, on_delete=models.CASCADE, related_name="comprador"
@@ -147,7 +165,7 @@ class Compradores(DadosCadModel):
         return str(self.id_comprador)
 
 
-class Lojas(DadosCadModel):
+class Lojas(BaseModel):
     id_loja = models.AutoField(primary_key=True)
     id_usuario = models.ForeignKey(
         Usuario, on_delete=models.CASCADE, related_name="lojas"
@@ -175,7 +193,7 @@ class Lojas(DadosCadModel):
         return self.nome_fantasia
 
 
-class Entregadores(DadosCadModel):
+class Entregadores(BaseModel):
     id_entregador = models.AutoField(primary_key=True)
     id_usuario = models.ForeignKey(
         Usuario, on_delete=models.CASCADE, related_name="entregadores"
@@ -200,7 +218,7 @@ class Entregadores(DadosCadModel):
         return str(self.id_usuario)
 
 
-class Categorias(DadosCadModel):
+class Categorias(BaseModel):
     id_categoria = models.AutoField(primary_key=True)
     nome_categoria = models.CharField(max_length=200)
     icon = models.CharField(max_length=200)
@@ -214,7 +232,7 @@ class Categorias(DadosCadModel):
         return self.nome_categoria
 
 
-class Produtos(DadosCadModel):
+class Produtos(BaseModel):
     id_produto = models.AutoField(primary_key=True)
     id_loja = models.ForeignKey(
         Lojas, on_delete=models.CASCADE, related_name="produtos"
@@ -235,7 +253,7 @@ class Produtos(DadosCadModel):
         return self.nome_produto
 
 
-class Pedidos(DadosCadModel):
+class Pedidos(BaseModel):
     id_pedido = models.AutoField(primary_key=True)
     id_cliente = models.ForeignKey(Compradores, on_delete=models.CASCADE)
     id_loja = models.ForeignKey(Lojas, on_delete=models.CASCADE)
@@ -268,7 +286,7 @@ class Pedidos(DadosCadModel):
         super().save(*args, **kwargs)
 
 
-class PedidoProdutos(DadosCadModel):
+class PedidoProdutos(BaseModel):
     id_pedido_produto = models.AutoField(primary_key=True)
     id_pedido = models.ForeignKey(Pedidos, on_delete=models.CASCADE)
     id_produto = models.ForeignKey(
@@ -287,7 +305,7 @@ class PedidoProdutos(DadosCadModel):
         return str(self.id_pedido) + str(self.id_produto)
 
 
-class Pagamento(DadosCadModel):
+class Pagamento(BaseModel):
     id_pagamento = models.AutoField(primary_key=True)
     id_pedido = models.OneToOneField(Pedidos, on_delete=models.CASCADE)
     id_intent = models.CharField(max_length=200, unique=True)
