@@ -7,6 +7,9 @@ migrations:
 migrate:
 	python manage.py migrate
 
+seed-superuser:
+	python manage.py seed_superuser $(ARGS)
+
 format:
 	ruff format .
 

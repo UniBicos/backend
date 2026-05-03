@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from unibicos.models import Lojas, Usuario
+from unibicos.models import Lojas
 from unibicos.serializers.usuarios import UsuarioSerializer
 
 

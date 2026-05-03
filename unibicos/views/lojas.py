@@ -1,10 +1,8 @@
-from urllib3 import request
-
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from unibicos.models import Lojas, Usuario, Usuario
+from unibicos.models import Lojas
 from unibicos.serializers import LojasSerializer
 from unibicos.views import stripe
 
@@ -28,7 +26,7 @@ class LojasViewSet(viewsets.ViewSet):
 
     def create(self, request):
         request.data["id_user_cad"] = request.user.id
-        user = Usuario.objects.get(id_usuario=request.data["id_user_cad"])
+        user = request.user
 
         try:
             account = stripe.Account.create(

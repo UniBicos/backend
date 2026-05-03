@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from unibicos.models import Entregadores, Usuario
+from unibicos.models import Entregadores
 from unibicos.serializers import EntregadoresSerializer
 
 
@@ -28,7 +28,7 @@ class EntregadoresViewSet(viewsets.ViewSet):
 
     def create(self, request):
         request.data["id_user_cad"] = request.user.id
-        user = Usuario.objects.get(id_usuario=request.data["id_user_cad"])
+        user = request.user
 
         try:
             account = stripe.Account.create(

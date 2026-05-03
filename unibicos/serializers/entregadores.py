@@ -12,7 +12,7 @@ class EntregadoresSerializer(serializers.ModelSerializer):
     def to_representation(self, obj):
         return {
             "id_entregador": obj.id_entregador,
-            "id_usuario": UsuarioSerializer(Usuario.objects.get(user=obj.id_usuario)),
+            "id_usuario": UsuarioSerializer(obj.id_usuario).data,
             "id_bancaria_stripe": obj.id_bancaria_stripe,
             "id_stripe": obj.id_stripe,
             "aberto": obj.aberto,
