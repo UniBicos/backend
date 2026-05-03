@@ -5,7 +5,9 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+
 status_pedido_choices = [
+    ('RASCUNHO', 'RASCUNHO'), 
     ('CRIADO', 'CRIADO'),
     ('ACEITO_PELO_VENDEDOR', 'ACEITO_PELO_VENDEDOR'),
     ('EM_PREPARO', 'EM_PREPARO'),
@@ -196,11 +198,10 @@ class Produtos(DadosCadModel):
     id_loja = models.ForeignKey(Lojas, on_delete=models.CASCADE, related_name='produtos')
     id_categoria = models.ForeignKey(Categorias, on_delete=models.CASCADE)
     nome_produto = models.CharField(max_length=200)
-    imagem = models.ImageField(upload_to='produtos/')
+    imagem = models.ImageField(upload_to='produtos/', null=True, blank=True)  # 🔥 ADICIONE null=True, blank=True
     descricao = models.CharField(max_length=600)
     preco = models.IntegerField(default=0)
     disponivel = models.BooleanField(default=False)
-
     class Meta:
         db_table = 'tb_produtos'
         ordering = ['nome_produto']

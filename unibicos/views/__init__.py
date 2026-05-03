@@ -1,3 +1,5 @@
+from .auth import *
+from .categorias import *
 from .compradores import *
 from .entregadores import *
 from .instituicoes_ensino import *
@@ -6,3 +8,4 @@ from .movimentacoes import *
 from .pagamentos import *
 from .pedidos import *
 from .produtos import *
+from .carrinho import *

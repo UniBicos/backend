@@ -1,15 +1,15 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from unibicos.models import Lojas
-from unibicos.serializers import LojasSerializer
+from unibicos.models import Lojas, Produtos
+from unibicos.serializers import LojasSerializer, ProdutosSerializer
 
 
 class LojasViewSet(viewsets.ViewSet):
     queryset = Lojas.objects.all()
     serializer_class = LojasSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def list(self, request):
         queryset = Lojas.objects.all()
@@ -21,7 +21,10 @@ class LojasViewSet(viewsets.ViewSet):
         except Lojas.DoesNotExist:
             return Response({'error': 'Loja não encontrada'}, status=404)
 
-        return Response(LojasSerializer(loja).data)
+        produtos = Produtos.objects.filter(id_loja=loja.id_loja)
+        data = LojasSerializer(loja).data
+        data['products'] = ProdutosSerializer(produtos, many=True).data
+        return Response(data)
 
     def create(self, request):
         request.data['id_user_cad'] = request.user.id

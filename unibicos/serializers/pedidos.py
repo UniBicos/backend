@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from unibicos.models import PedidoProdutos, Pedidos, Produtos
-from unibicos.serializers.produtos import ProdutosSerializer
 
 
 class PedidosSerializer(serializers.ModelSerializer):
@@ -11,17 +10,22 @@ class PedidosSerializer(serializers.ModelSerializer):
 
     def to_representation(self, obj):
         return {
-            'id_pedido': obj.id_pedido,
-            'id_cliente': obj.id_cliente.id_comprador,
-            'id_loja': obj.id_loja.id_loja,
-            'id_entregador': obj.id_entregador.id_entregador if obj.id_entregador else None,
-            'taxa_entrega': obj.taxa_entrega,
-            'total_pedido': obj.total_pedido,
-            'status_pedido': obj.status_pedido,
-            'token': obj.token,
-            'sala_entrega': obj.sala_entrega,
-            'bloco_entrega': obj.bloco_entrega,
-            'descricao_local': obj.descricao_local,
+            'id': obj.id_pedido,
+            'clientId': obj.id_cliente.id_comprador,
+            'sellerId': obj.id_loja.id_loja,
+            'courierId': obj.id_entregador.id_entregador if obj.id_entregador else None,
+            'totalPrice': obj.total_pedido,
+            'deliveryFee': obj.taxa_entrega,
+            'status': obj.status_pedido,
+            'paymentMethod': 'PIX',  # Ajustar
+            'deliveryLocation': {
+                'latitude': 0,  # Ajustar
+                'longitude': 0,
+                'description': obj.descricao_local or '',
+            },
+            'verificationToken': obj.token,
+            'createdAt': obj.dt_cad.isoformat() if obj.dt_cad else None,
+            'completedAt': None,  # Ajustar
         }
 
 
@@ -31,6 +35,8 @@ class PedidoProdutosSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def to_representation(self, obj):
+        from .produtos import ProdutosSerializer
+
         return {
             'id_pedido_produto': obj.id_pedido_produto,
             'id_pedido': PedidosSerializer(Pedidos.objects.get(pk=obj.id_pedido.pk)),
