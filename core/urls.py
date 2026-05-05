@@ -50,6 +50,7 @@ urlpatterns = [
     # APP
     # ========================
     path("api/", include("unibicos.urls")),
+    path("api/", include("unibicos.urls")),
 ]
 
 # ========================

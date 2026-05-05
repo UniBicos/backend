@@ -15,7 +15,8 @@ SECRET_KEY = env("SECRET_KEY", default="dev-secret-key")
 
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "0.0.0.0", "192.168.0.105"]
+ALLOWED_HOSTS = ["*"]
+
 
 # Application definition
 sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
@@ -78,6 +79,12 @@ WSGI_APPLICATION = "core.wsgi.application"
 # ========================
 # DATABASE
 # =======================
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "db.sqlite3",
+    }
+}
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8081",
     "http://127.0.0.1:8081",
