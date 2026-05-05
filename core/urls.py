@@ -28,19 +28,23 @@ from unibicos.views import (
 
 urlpatterns = [
     # Admin
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
 
     # ========================
     # AUTH (JWT)
     # ========================
-    path('api/token/', TokenObtainPairView.as_view(), name='token'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='refresh'),
+    path("api/token/", TokenObtainPairView.as_view(), name="token"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
 
     # ========================
     # DOCUMENTAÇÃO
     # ========================
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger'),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/swagger/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger",
+    ),
     
     # ========================
     # CARRINHO (SACOLA)
@@ -53,7 +57,7 @@ urlpatterns = [
     # ========================
     # APP
     # ========================
-    path('api/', include('unibicos.urls')),
+    path("api/", include("unibicos.urls")),
 ]
 
 # ========================

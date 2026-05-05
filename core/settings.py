@@ -15,7 +15,8 @@ SECRET_KEY = env('SECRET_KEY', default='dev-secret-key')
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', '192.168.0.105']
+ALLOWED_HOSTS = ["*"]
+
 
 # Application definition
 sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
