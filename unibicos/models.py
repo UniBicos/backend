@@ -97,6 +97,14 @@ class Usuario(AbstractUser, BaseModel):
     def __str__(self):
         return self.email
 
+    def save(self, *args, **kwargs):
+        if self.cpf == "":
+            self.cpf = None
+        if self.cnpj == "":
+            self.cnpj = None
+
+        super().save(*args, **kwargs)
+
 
 class InstituicoesEnsino(BaseModel):
     id_instituicao = models.AutoField(primary_key=True)
