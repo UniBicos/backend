@@ -1,3 +1,5 @@
+from .auth import *
+from .categorias import *
 from .compradores import *
 from .entregadores import *
 from .instituicoes_ensino import *
@@ -8,3 +10,4 @@ from .pedidos import *
 from .produtos import *
 from .usuarios import *
 from .stripe import stripe_webhook
+from .carrinho import *

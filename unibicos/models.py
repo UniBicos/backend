@@ -8,7 +8,9 @@ from core import settings
 from core import settings
 from unibicos.managers import UsuarioManager
 
+
 status_pedido_choices = [
+    ('RASCUNHO', 'RASCUNHO'), 
     ("CRIADO", "CRIADO"),
     ("ACEITO_PELO_VENDEDOR", "ACEITO_PELO_VENDEDOR"),
     ("EM_PREPARO", "EM_PREPARO"),
@@ -239,11 +241,10 @@ class Produtos(BaseModel):
     )
     id_categoria = models.ForeignKey(Categorias, on_delete=models.CASCADE)
     nome_produto = models.CharField(max_length=200)
-    imagem = models.ImageField(upload_to="produtos/")
+    imagem = models.ImageField(upload_to="produtos/", null=True, blank=True)
     descricao = models.CharField(max_length=600)
     preco = models.IntegerField(default=0)
     disponivel = models.BooleanField(default=False)
-
     class Meta:
         db_table = "tb_produtos"
         ordering = ["nome_produto"]

@@ -10,14 +10,20 @@ class LojasSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def to_representation(self, obj):
+        institution_name = obj.id_usuario.id_instituicao.sigla if obj.id_usuario and obj.id_usuario.id_instituicao else ''
         return {
-            "id_loja": obj.id_loja,
-            "id_usuario": UsuarioSerializer(obj.id_usuario).data,
-            "id_bancaria_stripe": obj.id_bancaria_stripe,
-            "id_stripe": obj.id_stripe,
-            "nome_fantasia": obj.nome_fantasia,
-            "aberto": obj.aberto,
-            "departamento": obj.departamento,
-            "localizacao": obj.localizacao,
-            "avaliacao": obj.avaliacao,
+            'id': obj.id_loja,
+            'id_loja': obj.id_loja,
+            'userId': obj.id_usuario.id,
+            'fantasyName': obj.nome_fantasia,
+            'isInformal': False,
+            'location': {
+                'block': obj.localizacao or '',
+                'room': '',
+                'reference': '',
+            },
+            'image': '',
+            'rating': obj.avaliacao,
+            'institution': institution_name,
+            'department': obj.departamento,
         }

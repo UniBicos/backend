@@ -2,8 +2,8 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from unibicos.models import Pedidos
-from unibicos.serializers import PedidosSerializer
+from unibicos.models import Pedidos, PedidoProdutos, Produtos, Lojas
+from unibicos.serializers import PedidosSerializer, PedidoProdutosSerializer
 
 
 class PedidosViewSet(viewsets.ViewSet):
@@ -28,7 +28,39 @@ class PedidosViewSet(viewsets.ViewSet):
         if status_pedido:
             queryset = queryset.filter(status_pedido=status_pedido)
 
-        return Response(PedidosSerializer(queryset, many=True).data)
+        data = PedidosSerializer(queryset, many=True).data
+        for item in data:
+            # Adicionar produtos
+            pedido_produtos = PedidoProdutos.objects.filter(id_pedido=item['id'])
+            item['products'] = []
+            for pp in pedido_produtos:
+                produto = Produtos.objects.get(id_produto=pp.id_produto.id_produto)
+                item['products'].append({
+                    'id': pp.id_pedido_produto,
+                    'orderId': pp.id_pedido.id_pedido,
+                    'productId': pp.id_produto.id_produto,
+                    'quantity': pp.quantidade,
+                    'unitPrice': pp.preco_un,
+                    'details': {
+                        'id': produto.id_produto,
+                        'title': produto.nome_produto,
+                        'description': produto.descricao,
+                        'price': produto.preco,
+                        'image': produto.imagem.url if produto.imagem else '',
+                        'categoryId': produto.id_categoria.id_categoria,
+                        'sellerId': produto.id_loja.id_loja,
+                        'isAvailable': produto.disponivel,
+                    }
+                })
+            # Adicionar seller
+            loja = Lojas.objects.get(id_loja=item['sellerId'])
+            item['seller'] = {
+                'id': loja.id_loja,
+                'userId': loja.id_usuario.id,
+                'fantasyName': loja.nome_fantasia,
+                'image': '',
+            }
+        return Response(data)
 
     def retrieve(self, request, pk=None):
         try:
