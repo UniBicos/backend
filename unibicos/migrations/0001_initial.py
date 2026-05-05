@@ -9,7 +9,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -20,25 +19,125 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Usuario',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('password', models.CharField(max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
-                ('is_staff', models.BooleanField(default=False, help_text='Designates whether the user can log into this admin site.', verbose_name='staff status')),
-                ('is_active', models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active')),
-                ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
-                ('dt_cad', models.DateTimeField(auto_now_add=True)),
-                ('dt_alt', models.DateTimeField(auto_now=True)),
-                ('email', models.EmailField(max_length=200, unique=True, verbose_name='Endereço de E-mail')),
-                ('nome', models.CharField(max_length=255, verbose_name='Nome Completo')),
-                ('cpf', models.CharField(blank=True, max_length=11, null=True, unique=True, validators=[unibicos.models.valida_cpf])),
-                ('cnpj', models.CharField(blank=True, max_length=14, null=True, unique=True, validators=[unibicos.models.valida_cnpj])),
-                ('telefone', models.CharField(max_length=15)),
-                ('matricula', models.CharField(blank=True, max_length=50, null=True)),
-                ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
-                ('id_user_alt', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(class)s_user_alt', to=settings.AUTH_USER_MODEL)),
-                ('id_user_cad', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(class)s_user_cad', to=settings.AUTH_USER_MODEL)),
-                ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("password", models.CharField(max_length=128, verbose_name="password")),
+                (
+                    "last_login",
+                    models.DateTimeField(blank=True, null=True, verbose_name="last login"),
+                ),
+                (
+                    "is_superuser",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates that this user has all permissions without explicitly assigning them.",
+                        verbose_name="superuser status",
+                    ),
+                ),
+                (
+                    "is_staff",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates whether the user can log into this admin site.",
+                        verbose_name="staff status",
+                    ),
+                ),
+                (
+                    "is_active",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Designates whether this user should be treated as active. Unselect this instead of deleting accounts.",
+                        verbose_name="active",
+                    ),
+                ),
+                (
+                    "date_joined",
+                    models.DateTimeField(
+                        default=django.utils.timezone.now, verbose_name="date joined"
+                    ),
+                ),
+                ("dt_cad", models.DateTimeField(auto_now_add=True)),
+                ("dt_alt", models.DateTimeField(auto_now=True)),
+                (
+                    "email",
+                    models.EmailField(
+                        max_length=200, unique=True, verbose_name="Endereço de E-mail"
+                    ),
+                ),
+                (
+                    "nome",
+                    models.CharField(max_length=255, verbose_name="Nome Completo"),
+                ),
+                (
+                    "cpf",
+                    models.CharField(
+                        blank=True,
+                        max_length=11,
+                        null=True,
+                        unique=True,
+                        validators=[unibicos.models.valida_cpf],
+                    ),
+                ),
+                (
+                    "cnpj",
+                    models.CharField(
+                        blank=True,
+                        max_length=14,
+                        null=True,
+                        unique=True,
+                        validators=[unibicos.models.valida_cnpj],
+                    ),
+                ),
+                ("telefone", models.CharField(max_length=15)),
+                ("matricula", models.CharField(blank=True, max_length=50, null=True)),
+                (
+                    "groups",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
+                        related_name="user_set",
+                        related_query_name="user",
+                        to="auth.group",
+                        verbose_name="groups",
+                    ),
+                ),
+                (
+                    "id_user_alt",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="%(class)s_user_alt",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "id_user_cad",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="%(class)s_user_cad",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "user_permissions",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="Specific permissions for this user.",
+                        related_name="user_set",
+                        related_query_name="user",
+                        to="auth.permission",
+                        verbose_name="user permissions",
+                    ),
+                ),
             ],
             options={
                 'verbose_name_plural': 'Usuarios',
@@ -186,22 +285,87 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Pedidos',
             fields=[
-                ('dt_cad', models.DateTimeField(auto_now_add=True)),
-                ('dt_alt', models.DateTimeField(auto_now=True)),
-                ('id_pedido', models.AutoField(primary_key=True, serialize=False)),
-                ('id_stripe', models.CharField(blank=True, max_length=200, null=True, unique=True)),
-                ('taxa_entrega', models.IntegerField(default=0)),
-                ('total_pedido', models.IntegerField(default=0)),
-                ('status_pedido', models.CharField(choices=[('CRIADO', 'CRIADO'), ('ACEITO_PELO_VENDEDOR', 'ACEITO_PELO_VENDEDOR'), ('EM_PREPARO', 'EM_PREPARO'), ('ENTREGA_ACEITA', 'ENTREGA_ACEITA'), ('SAIU_PARA_ENTREGA', 'SAIU_PARA_ENTREGA'), ('ENTREGUE', 'ENTREGUE'), ('CANCELADO', 'CANCELADO')], default='CRIADO', max_length=20)),
-                ('token', models.CharField(max_length=4, unique=True)),
-                ('sala_entrega', models.CharField(blank=True, max_length=50, null=True)),
-                ('bloco_entrega', models.CharField(blank=True, max_length=100, null=True)),
-                ('descricao_local', models.CharField(blank=True, max_length=600, null=True)),
-                ('id_cliente', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='unibicos.compradores')),
-                ('id_entregador', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='unibicos.entregadores')),
-                ('id_loja', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='unibicos.lojas')),
-                ('id_user_alt', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(class)s_user_alt', to=settings.AUTH_USER_MODEL)),
-                ('id_user_cad', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='%(class)s_user_cad', to=settings.AUTH_USER_MODEL)),
+                ("dt_cad", models.DateTimeField(auto_now_add=True)),
+                ("dt_alt", models.DateTimeField(auto_now=True)),
+                ("id_pedido", models.AutoField(primary_key=True, serialize=False)),
+                (
+                    "id_stripe",
+                    models.CharField(
+                        blank=True, max_length=200, null=True, unique=True
+                    ),
+                ),
+                ("taxa_entrega", models.IntegerField(default=0)),
+                ("total_pedido", models.IntegerField(default=0)),
+                (
+                    "status_pedido",
+                    models.CharField(
+                        choices=[
+                            ("CRIADO", "CRIADO"),
+                            ("ACEITO_PELO_VENDEDOR", "ACEITO_PELO_VENDEDOR"),
+                            ("EM_PREPARO", "EM_PREPARO"),
+                            ("ENTREGA_ACEITA", "ENTREGA_ACEITA"),
+                            ("SAIU_PARA_ENTREGA", "SAIU_PARA_ENTREGA"),
+                            ("ENTREGUE", "ENTREGUE"),
+                            ("CANCELADO", "CANCELADO"),
+                        ],
+                        default="CRIADO",
+                        max_length=20,
+                    ),
+                ),
+                ("token", models.CharField(max_length=4, unique=True)),
+                (
+                    "sala_entrega",
+                    models.CharField(blank=True, max_length=50, null=True),
+                ),
+                (
+                    "bloco_entrega",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
+                (
+                    "descricao_local",
+                    models.CharField(blank=True, max_length=600, null=True),
+                ),
+                (
+                    "id_cliente",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="unibicos.compradores",
+                    ),
+                ),
+                (
+                    "id_entregador",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="unibicos.entregadores",
+                    ),
+                ),
+                (
+                    "id_loja",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="unibicos.lojas"
+                    ),
+                ),
+                (
+                    "id_user_alt",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="%(class)s_user_alt",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "id_user_cad",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="%(class)s_user_cad",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
                 'verbose_name_plural': 'Pedidos',

@@ -55,6 +55,4 @@ class Command(BaseCommand):
         user.save()
 
         action = "Created" if created else "Updated"
-        self.stdout.write(
-            self.style.SUCCESS(f"{action} superuser {user.email} (id={user.pk}).")
-        )
+        self.stdout.write(self.style.SUCCESS(f"{action} superuser {user.email} (id={user.pk})."))

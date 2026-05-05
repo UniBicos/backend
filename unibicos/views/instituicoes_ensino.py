@@ -19,18 +19,18 @@ class InstituicoesEnsinoViewSet(viewsets.ViewSet):
         try:
             instituicao_ensino = InstituicoesEnsino.objects.get(id_instituicao=pk)
         except InstituicoesEnsino.DoesNotExist:
-            return Response({'error': 'Instituição de Ensino não encontrado'}, status=404)
+            return Response({"error": "Instituição de Ensino não encontrado"}, status=404)
 
         return Response(InstituicoesEnsinoSerializer(instituicao_ensino).data)
 
     def create(self, request):
-        request.data['id_user_cad'] = request.user.id
+        request.data["id_user_cad"] = request.user.id
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
             serializer.save()
             return Response(
-                {'message': 'Instituição de Ensino cadastrado com sucesso'}, status=201
+                {"message": "Instituição de Ensino cadastrado com sucesso"}, status=201
             )
         return Response(serializer.errors, status=400)
 
@@ -38,21 +38,21 @@ class InstituicoesEnsinoViewSet(viewsets.ViewSet):
         try:
             instituicao_ensino = InstituicoesEnsino.objects.get(id_instituicao=pk)
         except InstituicoesEnsino.DoesNotExist:
-            return Response({'error': 'Instituição de Ensino não encontrado'}, status=404)
+            return Response({"error": "Instituição de Ensino não encontrado"}, status=404)
 
-        request.data['id_user_alt'] = request.user.id
+        request.data["id_user_alt"] = request.user.id
         serializer = self.serializer_class(instituicao_ensino, data=request.data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
-            return Response({'message': 'Instituição de Ensino alterado com sucesso'})
+            return Response({"message": "Instituição de Ensino alterado com sucesso"})
         return Response(serializer.errors, status=400)
 
     def destroy(self, request, pk=None):
         try:
             instituicao_ensino = InstituicoesEnsino.objects.get(id_instituicao=pk)
         except InstituicoesEnsino.DoesNotExist:
-            return Response({'error': 'Instituição de Ensino não encontrado'}, status=404)
+            return Response({"error": "Instituição de Ensino não encontrado"}, status=404)
 
         instituicao_ensino.delete()
-        return Response({'message': 'Instituição de Ensino deletado com sucesso'}, status=204)
+        return Response({"message": "Instituição de Ensino deletado com sucesso"}, status=204)
