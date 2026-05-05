@@ -14,10 +14,10 @@ class PedidosViewSet(viewsets.ViewSet):
     def list(self, request):
         queryset = Pedidos.objects.all()
 
-        id_cliente = request.query_params.get('id_cliente')
-        id_loja = request.query_params.get('id_loja')
-        id_entregador = request.query_params.get('id_entregador')
-        status_pedido = self.request.query_params.get('status')
+        id_cliente = request.query_params.get("id_cliente")
+        id_loja = request.query_params.get("id_loja")
+        id_entregador = request.query_params.get("id_entregador")
+        status_pedido = self.request.query_params.get("status")
 
         if id_cliente:
             queryset = queryset.filter(id_cliente=id_cliente)
@@ -31,34 +31,36 @@ class PedidosViewSet(viewsets.ViewSet):
         data = PedidosSerializer(queryset, many=True).data
         for item in data:
             # Adicionar produtos
-            pedido_produtos = PedidoProdutos.objects.filter(id_pedido=item['id'])
-            item['products'] = []
+            pedido_produtos = PedidoProdutos.objects.filter(id_pedido=item["id"])
+            item["products"] = []
             for pp in pedido_produtos:
                 produto = Produtos.objects.get(id_produto=pp.id_produto.id_produto)
-                item['products'].append({
-                    'id': pp.id_pedido_produto,
-                    'orderId': pp.id_pedido.id_pedido,
-                    'productId': pp.id_produto.id_produto,
-                    'quantity': pp.quantidade,
-                    'unitPrice': pp.preco_un,
-                    'details': {
-                        'id': produto.id_produto,
-                        'title': produto.nome_produto,
-                        'description': produto.descricao,
-                        'price': produto.preco,
-                        'image': produto.imagem.url if produto.imagem else '',
-                        'categoryId': produto.id_categoria.id_categoria,
-                        'sellerId': produto.id_loja.id_loja,
-                        'isAvailable': produto.disponivel,
+                item["products"].append(
+                    {
+                        "id": pp.id_pedido_produto,
+                        "orderId": pp.id_pedido.id_pedido,
+                        "productId": pp.id_produto.id_produto,
+                        "quantity": pp.quantidade,
+                        "unitPrice": pp.preco_un,
+                        "details": {
+                            "id": produto.id_produto,
+                            "title": produto.nome_produto,
+                            "description": produto.descricao,
+                            "price": produto.preco,
+                            "image": produto.imagem.url if produto.imagem else "",
+                            "categoryId": produto.id_categoria.id_categoria,
+                            "sellerId": produto.id_loja.id_loja,
+                            "isAvailable": produto.disponivel,
+                        },
                     }
-                })
+                )
             # Adicionar seller
-            loja = Lojas.objects.get(id_loja=item['sellerId'])
-            item['seller'] = {
-                'id': loja.id_loja,
-                'userId': loja.id_usuario.id,
-                'fantasyName': loja.nome_fantasia,
-                'image': '',
+            loja = Lojas.objects.get(id_loja=item["sellerId"])
+            item["seller"] = {
+                "id": loja.id_loja,
+                "userId": loja.id_usuario.id,
+                "fantasyName": loja.nome_fantasia,
+                "image": "",
             }
         return Response(data)
 
@@ -66,38 +68,38 @@ class PedidosViewSet(viewsets.ViewSet):
         try:
             pedido = Pedidos.objects.get(id_pedido=pk)
         except Pedidos.DoesNotExist:
-            return Response({'error': 'Pedido não encontrado'}, status=404)
+            return Response({"error": "Pedido não encontrado"}, status=404)
 
         return Response(PedidosSerializer(pedido).data)
 
     def create(self, request):
-        request.data['id_user_cad'] = request.user.id
+        request.data["id_user_cad"] = request.user.id
         serializer = PedidosSerializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save()
-            return Response({'message': 'Pedido cadastrado com sucesso'}, status=201)
+            return Response({"message": "Pedido cadastrado com sucesso"}, status=201)
         return Response(serializer.errors, status=400)
 
     def partial_update(self, request, pk=None):
         try:
             pedido = Pedidos.objects.get(id_pedido=pk)
         except Pedidos.DoesNotExist:
-            return Response({'error': 'Pedido não encontrado'}, status=404)
+            return Response({"error": "Pedido não encontrado"}, status=404)
 
-        request.data['id_user_alt'] = request.user.id
+        request.data["id_user_alt"] = request.user.id
         serializer = PedidosSerializer(pedido, data=request.data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
-            return Response({'message': 'Pedido alterado com sucesso'})
+            return Response({"message": "Pedido alterado com sucesso"})
         return Response(serializer.errors, status=400)
 
     def destroy(self, request, pk=None):
         try:
             pedido = Pedidos.objects.get(id_pedido=pk)
         except Pedidos.DoesNotExist:
-            return Response({'error': 'Pedido não encontrado'}, status=404)
+            return Response({"error": "Pedido não encontrado"}, status=404)
 
         pedido.delete()
-        return Response({'message': 'Pedido deletado com sucesso'}, status=204)
+        return Response({"message": "Pedido deletado com sucesso"}, status=204)

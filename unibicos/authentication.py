@@ -1,7 +1,9 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+
 class CustomJWTAuthentication(JWTAuthentication):
     pass
+
 
 # from django.utils.translation import gettext
 # from rest_framework import exceptions

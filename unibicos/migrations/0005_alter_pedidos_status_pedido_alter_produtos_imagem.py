@@ -4,20 +4,32 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('unibicos', '0004_alter_produtos_imagem'),
+        ("unibicos", "0004_alter_produtos_imagem"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='pedidos',
-            name='status_pedido',
-            field=models.CharField(choices=[('RASCUNHO', 'RASCUNHO'), ('CRIADO', 'CRIADO'), ('ACEITO_PELO_VENDEDOR', 'ACEITO_PELO_VENDEDOR'), ('EM_PREPARO', 'EM_PREPARO'), ('ENTREGA_ACEITA', 'ENTREGA_ACEITA'), ('SAIU_PARA_ENTREGA', 'SAIU_PARA_ENTREGA'), ('ENTREGUE', 'ENTREGUE'), ('CANCELADO', 'CANCELADO')], default='CRIADO', max_length=20),
+            model_name="pedidos",
+            name="status_pedido",
+            field=models.CharField(
+                choices=[
+                    ("RASCUNHO", "RASCUNHO"),
+                    ("CRIADO", "CRIADO"),
+                    ("ACEITO_PELO_VENDEDOR", "ACEITO_PELO_VENDEDOR"),
+                    ("EM_PREPARO", "EM_PREPARO"),
+                    ("ENTREGA_ACEITA", "ENTREGA_ACEITA"),
+                    ("SAIU_PARA_ENTREGA", "SAIU_PARA_ENTREGA"),
+                    ("ENTREGUE", "ENTREGUE"),
+                    ("CANCELADO", "CANCELADO"),
+                ],
+                default="CRIADO",
+                max_length=20,
+            ),
         ),
         migrations.AlterField(
-            model_name='produtos',
-            name='imagem',
-            field=models.ImageField(blank=True, null=True, upload_to='produtos/'),
+            model_name="produtos",
+            name="imagem",
+            field=models.ImageField(blank=True, null=True, upload_to="produtos/"),
         ),
     ]

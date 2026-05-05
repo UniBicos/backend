@@ -9,7 +9,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -32,9 +31,7 @@ class Migration(migrations.Migration):
                 ("password", models.CharField(max_length=128, verbose_name="password")),
                 (
                     "last_login",
-                    models.DateTimeField(
-                        blank=True, null=True, verbose_name="last login"
-                    ),
+                    models.DateTimeField(blank=True, null=True, verbose_name="last login"),
                 ),
                 (
                     "is_superuser",
@@ -489,9 +486,7 @@ class Migration(migrations.Migration):
                 ("id_pedido", models.AutoField(primary_key=True, serialize=False)),
                 (
                     "id_stripe",
-                    models.CharField(
-                        blank=True, max_length=200, null=True, unique=True
-                    ),
+                    models.CharField(blank=True, max_length=200, null=True, unique=True),
                 ),
                 ("taxa_entrega", models.IntegerField(default=0)),
                 ("total_pedido", models.IntegerField(default=0)),

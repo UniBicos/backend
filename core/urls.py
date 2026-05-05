@@ -23,37 +23,33 @@ from unibicos.views import (
     get_carrinho,
     adicionar_ao_carrinho,
     remover_do_carrinho,
-    finalizar_carrinho
+    finalizar_carrinho,
 )
 
 urlpatterns = [
     # Admin
-    path('admin/', admin.site.urls),
-
+    path("admin/", admin.site.urls),
     # ========================
     # AUTH (JWT)
     # ========================
-    path('api/token/', TokenObtainPairView.as_view(), name='token'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='refresh'),
-
+    path("api/token/", TokenObtainPairView.as_view(), name="token"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
     # ========================
     # DOCUMENTAÇÃO
     # ========================
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger'),
-    
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),
     # ========================
     # CARRINHO (SACOLA)
     # ========================
-    path('api/carrinho/', get_carrinho, name='get_carrinho'),
-    path('api/carrinho/adicionar/', adicionar_ao_carrinho, name='adicionar_carrinho'),
-    path('api/carrinho/remover/<int:produto_id>/', remover_do_carrinho, name='remover_carrinho'),
-    path('api/carrinho/finalizar/', finalizar_carrinho, name='finalizar_carrinho'),
-    
+    path("api/carrinho/", get_carrinho, name="get_carrinho"),
+    path("api/carrinho/adicionar/", adicionar_ao_carrinho, name="adicionar_carrinho"),
+    path("api/carrinho/remover/<int:produto_id>/", remover_do_carrinho, name="remover_carrinho"),
+    path("api/carrinho/finalizar/", finalizar_carrinho, name="finalizar_carrinho"),
     # ========================
     # APP
     # ========================
-    path('api/', include('unibicos.urls')),
+    path("api/", include("unibicos.urls")),
 ]
 
 # ========================
