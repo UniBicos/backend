@@ -1,11 +1,11 @@
-import stripe
-
 from rest_framework import serializers
+from django.db import transaction
 
 from unibicos.models import Usuario
 from unibicos.models import Compradores
 from unibicos.models import Lojas
 from unibicos.models import Entregadores
+from unibicos.services.stripe import stripe
 
 
 class UsuarioSerializer(serializers.ModelSerializer):
@@ -18,10 +18,22 @@ class UsuarioSerializer(serializers.ModelSerializer):
         user = Usuario.objects.create_user(**validated_data)
         return user
 
+    def get_user_roles(self, obj):
+        roles = []
+        if hasattr(obj, "comprador"):
+            roles.append("comprador")
+        if obj.lojas.exists():
+            roles.append("vendedor")
+        if obj.entregadores.exists():
+            roles.append("entregador")
+        return roles
+
     def to_representation(self, obj):
         data = super().to_representation(obj)
         if obj.id_instituicao:
             data["id_instituicao"] = obj.id_instituicao.id_instituicao
+
+        data["roles"] = self.get_user_roles(obj)
         return data
 
 
@@ -43,7 +55,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     agencia = serializers.CharField(
         max_length=10, required=False, allow_blank=True, allow_null=True
     )
-    conta = serializers.CharField(max_length=20, required=False, allow_blank=True, allow_null=True)
+    conta = serializers.CharField(
+        max_length=20, required=False, allow_blank=True, allow_null=True
+    )
     codigo_banco = serializers.CharField(
         max_length=10, required=False, allow_blank=True, allow_null=True
     )
@@ -70,58 +84,30 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
-        role = validated_data.pop("role")
+        with transaction.atomic():
+            role = validated_data.pop("role")
 
-        # Vendedor/Loja fields
-        nome_fantasia = validated_data.pop("nome_fantasia", None)
-        localizacao = validated_data.pop("localizacao", None)
-        departamento = validated_data.pop("departamento", None)
+            cnpj = validated_data.get("cnpj", None)
+            nome_fantasia = validated_data.pop("nome_fantasia", None)
+            localizacao = validated_data.pop("localizacao", None)
+            departamento = validated_data.pop("departamento", None)
 
-        # Entregador fields
-        agencia = validated_data.pop("agencia", None)
-        conta = validated_data.pop("conta", None)
-        codigo_banco = validated_data.pop("codigo_banco", None)
+            agencia = validated_data.pop("agencia", None)
+            conta = validated_data.pop("conta", None)
+            codigo_banco = validated_data.pop("codigo_banco", None)
 
-        user = Usuario.objects.create_user(**validated_data)
+            user = Usuario.objects.create_user(**validated_data)
 
-        if role == "comprador":
-            Compradores.objects.create(id_usuario=user, id_user_cad=user)
-        elif role == "vendedor":
-            if not nome_fantasia or not localizacao:
-                raise serializers.ValidationError(
-                    "nome_fantasia and localizacao are required for vendedores."
-                )
+            if cnpj is None:
+                Compradores.objects.create(
+                    id_usuario=user, id_user_cad=user
+                )  # Todo usuário que não seja PJ é um comprador potencial.
 
-            # Stripe account creation for Loja
-            try:
-                account = stripe.Account.create(
-                    type="express",
-                    country="BR",
-                    email=user.email,
-                    business_type="individual",  # Assuming individual for now
-                    business_profile={"name": nome_fantasia},
-                    metadata={"merchant_name": user.nome},
-                )
-                Lojas.objects.create(
-                    id_usuario=user,
-                    id_user_cad=user,
-                    nome_fantasia=nome_fantasia,
-                    localizacao=localizacao,
-                    departamento=departamento,
-                    id_stripe=account.id,
-                )
-            except Exception as e:
-                user.delete()
-                raise serializers.ValidationError({"stripe_error": str(e)})
-
-        elif role == "entregador":
-            if not agencia or not conta or not codigo_banco:
-                raise serializers.ValidationError(
-                    "agencia, conta, and codigo_banco are required for entregadores."
-                )
-
-            # Stripe account creation for Entregador
-            try:
+            elif role == "entregador":
+                if not agencia or not conta or not codigo_banco:
+                    raise serializers.ValidationError(
+                        "agencia, conta and codigo_banco are required for entregadores."
+                    )
                 account = stripe.Account.create(
                     type="express",
                     country="BR",
@@ -139,6 +125,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                         "routing_number": f"{codigo_banco}-{agencia}",
                         "account_number": conta,
                     },
+                    default_for_currency=True,
                 )
                 Entregadores.objects.create(
                     id_usuario=user,
@@ -146,8 +133,43 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                     id_stripe=account.id,
                     id_bancaria_stripe=bank_account.id,
                 )
-            except Exception as e:
-                user.delete()
-                raise serializers.ValidationError({"stripe_error": str(e)})
+
+            elif role == "vendedor":
+                if not agencia or not conta or not codigo_banco:
+                    raise serializers.ValidationError(
+                        "agencia, conta and codigo_banco are required for vendedores."
+                    )
+                if not nome_fantasia or not localizacao:
+                    raise serializers.ValidationError(
+                        "nome_fantasia and localizacao are required for vendedores."
+                    )
+                account = stripe.Account.create(
+                    type="express",
+                    country="BR",
+                    email=user.email,
+                    business_type="individual",
+                    business_profile={"name": nome_fantasia},
+                    metadata={"merchant_name": user.nome},
+                )
+                bank_account = stripe.Account.create_external_account(
+                    account.id,
+                    external_account={
+                        "object": "bank_account",
+                        "country": "BR",
+                        "currency": "brl",
+                        "routing_number": f"{codigo_banco}-{agencia}",
+                        "account_number": conta,
+                    },
+                    default_for_currency=True,
+                )
+                Lojas.objects.create(
+                    id_usuario=user,
+                    id_user_cad=user,
+                    nome_fantasia=nome_fantasia,
+                    localizacao=localizacao,
+                    departamento=departamento,
+                    id_stripe=account.id,
+                    id_bancaria_stripe=bank_account.id,
+                )
 
         return user

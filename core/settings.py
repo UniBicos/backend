@@ -5,8 +5,9 @@ from datetime import timedelta
 import environ
 
 env = environ.Env()
-
 BASE_DIR = Path(__file__).resolve().parent.parent
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+
 
 # ========================
 # SEGURANÇA
@@ -93,7 +94,9 @@ CORS_ALLOWED_ORIGINS = [
 # PASSWORD VALIDATION
 # ========================
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},

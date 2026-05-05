@@ -6,6 +6,8 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework.decorators import action
 
+from unibicos.serializers.usuarios import UsuarioSerializer
+
 
 class AuthViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
@@ -19,6 +21,7 @@ class AuthViewSet(viewsets.ViewSet):
             refresh = RefreshToken.for_user(user)
             return Response(
                 {
+                    "user": UsuarioSerializer(user).data,
                     "access": str(refresh.access_token),
                     "refresh": str(refresh),
                 }

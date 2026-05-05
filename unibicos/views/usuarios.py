@@ -77,18 +77,17 @@ class UsuariosViewSet(viewsets.ViewSet):
         url_path="register",
     )
     def register(self, request):
+        print(request.data)
         serializer = UserRegistrationSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            refresh = RefreshToken.for_user(user)
-            return Response(
-                {
-                    "message": "Usuário cadastrado com sucesso",
-                    "data": UsuarioSerializer(user).data,
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),
-                },
-                status=201,
-            )
-        print(serializer.errors)
-        return Response(serializer.errors, status=400)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        refresh = RefreshToken.for_user(user)
+        return Response(
+            {
+                "message": "Usuário cadastrado com sucesso",
+                "data": UsuarioSerializer(user).data,
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            },
+            status=201,
+        )

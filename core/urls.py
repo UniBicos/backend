@@ -25,10 +25,12 @@ from unibicos.views import (
     remover_do_carrinho,
     finalizar_carrinho,
 )
+from unibicos.services.webhook import stripe_webhook
 
 urlpatterns = [
     # Admin
     path("admin/", admin.site.urls),
+    path("webhook/stripe/", stripe_webhook, name="stripe_webhook"),
     # ========================
     # AUTH (JWT)
     # ========================
@@ -38,18 +40,25 @@ urlpatterns = [
     # DOCUMENTAÇÃO
     # ========================
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
-    path("api/swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),
+    path(
+        "api/swagger/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger",
+    ),
     # ========================
     # CARRINHO (SACOLA)
     # ========================
     path("api/carrinho/", get_carrinho, name="get_carrinho"),
     path("api/carrinho/adicionar/", adicionar_ao_carrinho, name="adicionar_carrinho"),
-    path("api/carrinho/remover/<int:produto_id>/", remover_do_carrinho, name="remover_carrinho"),
+    path(
+        "api/carrinho/remover/<int:produto_id>/",
+        remover_do_carrinho,
+        name="remover_carrinho",
+    ),
     path("api/carrinho/finalizar/", finalizar_carrinho, name="finalizar_carrinho"),
     # ========================
     # APP
     # ========================
-    path("api/", include("unibicos.urls")),
     path("api/", include("unibicos.urls")),
 ]
 

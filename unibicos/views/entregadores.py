@@ -1,5 +1,3 @@
-import stripe
-
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -7,6 +5,7 @@ from rest_framework.response import Response
 
 from unibicos.models import Entregadores
 from unibicos.serializers import EntregadoresSerializer
+from unibicos.services.stripe import stripe
 
 
 class EntregadoresViewSet(viewsets.ViewSet):
@@ -31,43 +30,14 @@ class EntregadoresViewSet(viewsets.ViewSet):
         user = request.user
 
         try:
-            account = stripe.Account.create(
-                type="express",
-                country="BR",
-                email=user.email,
-                business_type="individual",
-                business_profile={"name": user.nome},
-                metadata={"merchant_name": user.nome},
-                controller={
-                    "fees": {"payer": "application"},
-                    "losses": {"payments": "application"},
-                    "stripe_dashboard": {"type": "restricted"},
-                    "requirement-collection": "application",
-                    "type": "application",
-                },
-                capabilities={
-                    "transfers": {"requested": True},
-                },
-            )
-
-            bank_account = stripe.Account.create_external_account(
-                account.id,
-                external_account={
-                    "object": "bank_account",
-                    "country": "BR",
-                    "currency": "brl",
-                    "routing_number": f"{request.data.get('codigo_banco')}-{request.data.get('agencia')}",
-                    "account_number": request.data.get("conta"),
-                },
-                default_for_currency=True,
-            )
-
-            request.data["id_stripe"] = account.id
-            request.data["id_bancaria_stripe"] = bank_account.id
+            request.data["id_stripe"] = 0
+            request.data["id_bancaria_stripe"] = 0
             serializer = EntregadoresSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response({"message": "Entregador cadastrado com sucesso"}, status=201)
+                return Response(
+                    {"message": "Entregador cadastrado com sucesso"}, status=201
+                )
 
             return Response(serializer.errors, status=400)
         except Exception as e:

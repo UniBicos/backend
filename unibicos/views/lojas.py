@@ -4,7 +4,7 @@ from rest_framework.response import Response
 
 from unibicos.models import Lojas, Produtos
 from unibicos.serializers import LojasSerializer, ProdutosSerializer
-from unibicos.views import stripe
+from unibicos.services.stripe import stripe
 
 
 class LojasViewSet(viewsets.ViewSet):
@@ -30,42 +30,9 @@ class LojasViewSet(viewsets.ViewSet):
     def create(self, request):
         request.data["id_user_cad"] = request.user.id
         user = request.user
-
         try:
-            account = stripe.Account.create(
-                type="express",
-                country="BR",
-                email=user.email,
-                business_type=(
-                    "individual" if request.data.get("tipo_pessoa") == "fisica" else "company"
-                ),
-                controller={
-                    "fees": {"payer": "application"},
-                    "losses": {"payments": "application"},
-                    "stripe_dashboard": {"type": "restricted"},
-                },
-                capabilities={
-                    "card_payments": {"requested": True},
-                    "transfers": {"requested": True},
-                },
-                business_profile={"name": request.data.get("nome_fantasia")},
-                metadata={"merchant_name": user.nome},
-            )
-
-            bank_account = stripe.Account.create_external_account(
-                account.id,
-                external_account={
-                    "object": "bank_account",
-                    "country": "BR",
-                    "currency": "brl",
-                    "routing_number": f"{request.data.get('codigo_banco')}-{request.data.get('agencia')}",
-                    "account_number": request.data.get("conta"),
-                },
-                default_for_currency=True,
-            )
-
-            request.data["id_stripe"] = account.id
-            request.data["id_bancaria_stripe"] = bank_account.id
+            request.data["id_stripe"] = 0
+            request.data["id_bancaria_stripe"] = 0
             serializer = LojasSerializer(data=request.data)
 
             if serializer.is_valid():
