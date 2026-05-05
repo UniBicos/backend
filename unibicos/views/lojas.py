@@ -24,7 +24,7 @@ class LojasViewSet(viewsets.ViewSet):
 
         produtos = Produtos.objects.filter(id_loja=loja.id_loja)
         data = LojasSerializer(loja).data
-        data['products'] = ProdutosSerializer(produtos, many=True).data
+        data["products"] = ProdutosSerializer(produtos, many=True).data
         return Response(data)
 
     def create(self, request):
@@ -37,9 +37,7 @@ class LojasViewSet(viewsets.ViewSet):
                 country="BR",
                 email=user.email,
                 business_type=(
-                    "individual"
-                    if request.data.get("tipo_pessoa") == "fisica"
-                    else "company"
+                    "individual" if request.data.get("tipo_pessoa") == "fisica" else "company"
                 ),
                 controller={
                     "fees": {"payer": "application"},

@@ -19,6 +19,6 @@ class CategoriasViewSet(viewsets.ViewSet):
         try:
             categoria = Categorias.objects.get(id_categoria=pk)
         except Categorias.DoesNotExist:
-            return Response({'error': 'Categoria não encontrada'}, status=404)
+            return Response({"error": "Categoria não encontrada"}, status=404)
 
         return Response(CategoriasSerializer(categoria).data)
