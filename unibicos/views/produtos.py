@@ -38,14 +38,14 @@ class ProdutosViewSet(viewsets.ViewSet):
 
         serializer = ProdutosSerializer(queryset, many=True)
         data = serializer.data
-        # Adicionar seller para cada produto
+        
         for item in data:
             loja = Lojas.objects.get(id_loja=item["sellerId"])
-            item["seller"] = {
+            item["loja"] = {
                 "id": loja.id_loja,
-                "userId": loja.id_usuario.id,
-                "fantasyName": loja.nome_fantasia,
-                "image": "",  # Ajustar
+                "id_usuario": loja.id_usuario.id,
+                "nome_fantasia": loja.nome_fantasia,
+                "imagem": "",  # Ajustar
             }
         return Response(data)
 
@@ -60,14 +60,6 @@ class ProdutosViewSet(viewsets.ViewSet):
 
         serializer = ProdutosSerializer(produto)
         data = serializer.data
-        # Adicionar seller info
-        loja = Lojas.objects.get(id_loja=produto.id_loja.id_loja)
-        data["seller"] = {
-            "id": loja.id_loja,
-            "userId": loja.id_usuario.id,
-            "fantasyName": loja.nome_fantasia,
-            "image": "",  # Ajustar
-        }
         return Response(data)
 
     # =========================
@@ -129,7 +121,9 @@ class ProdutosViewSet(viewsets.ViewSet):
             queryset = queryset.filter(id_loja=id_loja)
 
         queryset = queryset.annotate(
-            total_pedidos=Coalesce(Count("itens_pedido__id_pedido", distinct=True), Value(0))
+            total_pedidos=Coalesce(
+                Count("itens_pedido__id_pedido", distinct=True), Value(0)
+            )
         ).order_by("-total_pedidos")
 
         return Response(ProdutosSerializer(queryset, many=True).data)
@@ -189,26 +183,8 @@ class ProdutosViewSet(viewsets.ViewSet):
                     "products": [],
                 }
 
-            categories[categoria.id_categoria]["products"].append(ProdutosSerializer(produto).data)
-
-        return Response(list(categories.values()))
-
-    @action(detail=False, methods=["get"])
-    def stores_with_products(self, request):
-        lojas = Lojas.objects.all()
-
-        data = []
-
-        for loja in lojas:
-            produtos = Produtos.objects.filter(id_loja=loja)
-
-            data.append(
-                {
-                    "id_loja": loja.id_loja,
-                    "nome_fantasia": loja.nome_fantasia,
-                    "avaliacao": loja.avaliacao,
-                    "produtos": ProdutosSerializer(produtos, many=True).data,
-                }
+            categories[categoria.id_categoria]["products"].append(
+                ProdutosSerializer(produto).data
             )
 
-        return Response(data)
+        return Response(list(categories.values()))

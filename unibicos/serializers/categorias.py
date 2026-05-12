@@ -11,6 +11,6 @@ class CategoriasSerializer(serializers.ModelSerializer):
     def to_representation(self, obj):
         return {
             "id": obj.id_categoria,
-            "name": obj.nome_categoria,
+            "nome": obj.nome_categoria,
             "icon": obj.icon,
         }

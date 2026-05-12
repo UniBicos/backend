@@ -29,39 +29,13 @@ class PedidosViewSet(viewsets.ViewSet):
             queryset = queryset.filter(status_pedido=status_pedido)
 
         data = PedidosSerializer(queryset, many=True).data
-        for item in data:
-            # Adicionar produtos
-            pedido_produtos = PedidoProdutos.objects.filter(id_pedido=item["id"])
-            item["products"] = []
-            for pp in pedido_produtos:
-                produto = Produtos.objects.get(id_produto=pp.id_produto.id_produto)
-                item["products"].append(
-                    {
-                        "id": pp.id_pedido_produto,
-                        "orderId": pp.id_pedido.id_pedido,
-                        "productId": pp.id_produto.id_produto,
-                        "quantity": pp.quantidade,
-                        "unitPrice": pp.preco_un,
-                        "details": {
-                            "id": produto.id_produto,
-                            "title": produto.nome_produto,
-                            "description": produto.descricao,
-                            "price": produto.preco,
-                            "image": produto.imagem.url if produto.imagem else "",
-                            "categoryId": produto.id_categoria.id_categoria,
-                            "sellerId": produto.id_loja.id_loja,
-                            "isAvailable": produto.disponivel,
-                        },
-                    }
-                )
-            # Adicionar seller
-            loja = Lojas.objects.get(id_loja=item["sellerId"])
-            item["seller"] = {
-                "id": loja.id_loja,
-                "userId": loja.id_usuario.id,
-                "fantasyName": loja.nome_fantasia,
-                "image": "",
-            }
+        pedido_produtos = PedidoProdutos.objects.filter(id_pedido=item["id"])
+        item["produtos"] = pedido_produtos
+        if not id_loja:
+            for item in data:
+                loja = Lojas.objects.get(id_loja=item["loja_id"])
+                item["loja"] = loja
+
         return Response(data)
 
     def retrieve(self, request, pk=None):

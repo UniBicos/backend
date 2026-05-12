@@ -47,3 +47,10 @@ class AuthViewSet(viewsets.ViewSet):
                 "refresh": str(refresh),
             }
         )
+
+    @action(detail=False, methods=["get"])
+    def me(self, request):
+        user = request.user
+        if user.is_authenticated:
+            return Response(UsuarioSerializer(user).data)
+        return Response({"error": "Usuário não autenticado"}, status=401)

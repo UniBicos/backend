@@ -34,6 +34,19 @@ class UsuarioSerializer(serializers.ModelSerializer):
             data["id_instituicao"] = obj.id_instituicao.id_instituicao
 
         data["roles"] = self.get_user_roles(obj)
+        if hasattr(obj, "lojas") and obj.lojas.exists():
+            loja = obj.lojas.first()
+            data["loja"] = {
+                "id_loja": loja.id_loja,
+                "nome_fantasia": loja.nome_fantasia,
+                "localizacao": loja.localizacao,
+                "departamento": loja.departamento,
+            }
+        if hasattr(obj, "entregadores") and obj.entregadores.exists():
+            entregador = obj.entregadores.first()
+            data["entregador"] = {
+                "id_entregador": entregador.id_entregador,
+            }
         return data
 
 

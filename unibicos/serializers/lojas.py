@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from unibicos.models import Lojas
-from unibicos.serializers.usuarios import UsuarioSerializer
+from unibicos.serializers.instituicoes_ensino import InstituicoesEnsinoSerializer
 
 
 class LojasSerializer(serializers.ModelSerializer):
@@ -10,24 +10,18 @@ class LojasSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def to_representation(self, obj):
-        institution_name = (
-            obj.id_usuario.id_instituicao.sigla
-            if obj.id_usuario and obj.id_usuario.id_instituicao
-            else ""
-        )
         return {
             "id": obj.id_loja,
-            "id_loja": obj.id_loja,
-            "userId": obj.id_usuario.id,
-            "fantasyName": obj.nome_fantasia,
-            "isInformal": False,
-            "location": {
-                "block": obj.localizacao or "",
-                "room": "",
-                "reference": "",
-            },
-            "image": "",
-            "rating": obj.avaliacao,
-            "institution": institution_name,
-            "department": obj.departamento,
+            "id_usuario": obj.id_usuario.id,
+            "nome_fantasia": obj.nome_fantasia,
+            "informal": obj.cnpj == "",
+            "localizacao": obj.localizacao,
+            "imagem": "",
+            "avaliacao": obj.avaliacao,
+            "instituicao": (
+                InstituicoesEnsinoSerializer(obj.id_usuario.id_instituicao).data
+                if obj.id_usuario and obj.id_usuario.id_instituicao
+                else None
+            ),
+            "departamento": obj.departamento,
         }
