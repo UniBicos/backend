@@ -25,9 +25,7 @@ router.register(r"lojas", LojasViewSet, basename="lojas")
 router.register(r"compradores", CompradoresViewSet, basename="compradores")
 router.register(r"pagamentos", PagamentoViewSet, basename="pagamentos")
 router.register(r"movimentacoes", MovimentacoesViewSet, basename="movimentacoes")
-router.register(
-    r"instituicoes_ensino", InstituicoesEnsinoViewSet, basename="instituicoes_ensino"
-)
+router.register(r"instituicoes_ensino", InstituicoesEnsinoViewSet, basename="instituicoes_ensino")
 router.register(r"usuarios", UsuariosViewSet)
 
 urlpatterns = router.urls

@@ -35,9 +35,7 @@ class EntregadoresViewSet(viewsets.ViewSet):
             serializer = EntregadoresSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(
-                    {"message": "Entregador cadastrado com sucesso"}, status=201
-                )
+                return Response({"message": "Entregador cadastrado com sucesso"}, status=201)
 
             return Response(serializer.errors, status=400)
         except Exception as e:

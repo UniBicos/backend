@@ -34,16 +34,12 @@ status_pagamento_choices = [
 
 def valida_cpf(value):
     if not re.match(r"^\d{11}$", value):
-        raise ValidationError(
-            "O CPF deve conter exatamente 11 dígitos e somente números."
-        )
+        raise ValidationError("O CPF deve conter exatamente 11 dígitos e somente números.")
 
 
 def valida_cnpj(value):
     if not re.match(r"^\d{14}$", value):
-        raise ValidationError(
-            "O CNPJ deve conter exatamente 14 dígitos e somente números."
-        )
+        raise ValidationError("O CNPJ deve conter exatamente 14 dígitos e somente números.")
 
 
 class BaseModel(models.Model):
@@ -145,9 +141,7 @@ class EmailsInstituicao(BaseModel):
 class Movimentacoes(BaseModel):
     id_movimentacoes = models.AutoField(primary_key=True)
     id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    tipo_perfil = models.CharField(
-        max_length=20, default="LOJA", choices=tipos_perfil_choices
-    )
+    tipo_perfil = models.CharField(max_length=20, default="LOJA", choices=tipos_perfil_choices)
     valor = models.IntegerField(default=0)
 
     class Meta:
@@ -161,9 +155,7 @@ class Movimentacoes(BaseModel):
 
 class Compradores(BaseModel):
     id_comprador = models.AutoField(primary_key=True)
-    id_usuario = models.OneToOneField(
-        Usuario, on_delete=models.CASCADE, related_name="comprador"
-    )
+    id_usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name="comprador")
 
     class Meta:
         db_table = "tb_compradores"
@@ -176,9 +168,7 @@ class Compradores(BaseModel):
 
 class Lojas(BaseModel):
     id_loja = models.AutoField(primary_key=True)
-    id_usuario = models.ForeignKey(
-        Usuario, on_delete=models.CASCADE, related_name="lojas"
-    )
+    id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="lojas")
     id_stripe = models.CharField(max_length=200, unique=True)
     id_bancaria_stripe = models.CharField(max_length=120)
     nome_fantasia = models.CharField(max_length=120)
@@ -204,9 +194,7 @@ class Lojas(BaseModel):
 
 class Entregadores(BaseModel):
     id_entregador = models.AutoField(primary_key=True)
-    id_usuario = models.ForeignKey(
-        Usuario, on_delete=models.CASCADE, related_name="entregadores"
-    )
+    id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="entregadores")
     id_stripe = models.CharField(max_length=200, unique=True)
     id_bancaria_stripe = models.CharField(max_length=120)
     aberto = models.BooleanField(default=False)
@@ -243,9 +231,7 @@ class Categorias(BaseModel):
 
 class Produtos(BaseModel):
     id_produto = models.AutoField(primary_key=True)
-    id_loja = models.ForeignKey(
-        Lojas, on_delete=models.CASCADE, related_name="produtos"
-    )
+    id_loja = models.ForeignKey(Lojas, on_delete=models.CASCADE, related_name="produtos")
     id_categoria = models.ForeignKey(Categorias, on_delete=models.CASCADE)
     nome_produto = models.CharField(max_length=200)
     imagem = models.ImageField(upload_to="produtos/", null=True, blank=True)
@@ -298,9 +284,7 @@ class Pedidos(BaseModel):
 class PedidoProdutos(BaseModel):
     id_pedido_produto = models.AutoField(primary_key=True)
     id_pedido = models.ForeignKey(Pedidos, on_delete=models.CASCADE)
-    id_produto = models.ForeignKey(
-        Produtos, on_delete=models.CASCADE, related_name="itens_pedido"
-    )
+    id_produto = models.ForeignKey(Produtos, on_delete=models.CASCADE, related_name="itens_pedido")
     quantidade = models.IntegerField(default=1)
     preco_un = models.IntegerField(default=0)
 

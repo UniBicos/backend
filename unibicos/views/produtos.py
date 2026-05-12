@@ -38,7 +38,7 @@ class ProdutosViewSet(viewsets.ViewSet):
 
         serializer = ProdutosSerializer(queryset, many=True)
         data = serializer.data
-        
+
         for item in data:
             loja = Lojas.objects.get(id_loja=item["sellerId"])
             item["loja"] = {
@@ -121,9 +121,7 @@ class ProdutosViewSet(viewsets.ViewSet):
             queryset = queryset.filter(id_loja=id_loja)
 
         queryset = queryset.annotate(
-            total_pedidos=Coalesce(
-                Count("itens_pedido__id_pedido", distinct=True), Value(0)
-            )
+            total_pedidos=Coalesce(Count("itens_pedido__id_pedido", distinct=True), Value(0))
         ).order_by("-total_pedidos")
 
         return Response(ProdutosSerializer(queryset, many=True).data)
@@ -183,8 +181,6 @@ class ProdutosViewSet(viewsets.ViewSet):
                     "products": [],
                 }
 
-            categories[categoria.id_categoria]["products"].append(
-                ProdutosSerializer(produto).data
-            )
+            categories[categoria.id_categoria]["products"].append(ProdutosSerializer(produto).data)
 
         return Response(list(categories.values()))

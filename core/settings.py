@@ -3,6 +3,8 @@ import sys
 from pathlib import Path
 from datetime import timedelta
 import environ
+import dj_database_url
+from decouple import config
 
 env = environ.Env()
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -12,10 +14,8 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 # ========================
 # SEGURANÇA
 # ========================
-SECRET_KEY = env("SECRET_KEY", default="dev-secret-key")
-
-DEBUG = True
-
+SECRET_KEY = config("SECRET_KEY")
+DEBUG = config("DEBUG", default=False, cast=bool)
 ALLOWED_HOSTS = ["*"]
 
 
@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     # terceiros
     "rest_framework",
     "drf_spectacular",
+    "cloudinary",
+    "cloudinary_storage",
     # app
     "unibicos.apps.UnibicosConfig",
 ]
@@ -53,6 +55,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -80,12 +83,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 # ========================
 # DATABASE
 # =======================
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+DATABASES = {"default": dj_database_url.parse(config("DATABASE_URL"))}
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8081",
     "http://127.0.0.1:8081",
@@ -94,9 +92,7 @@ CORS_ALLOWED_ORIGINS = [
 # PASSWORD VALIDATION
 # ========================
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -115,11 +111,21 @@ USE_TZ = True
 # ========================
 # STATIC & MEDIA
 # ========================
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": config("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": config("CLOUDINARY_API_KEY"),
+    "API_SECRET": config("CLOUDINARY_API_SECRET"),
+}
+
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 # ========================
 # DJANGO REST FRAMEWORK
@@ -150,9 +156,6 @@ SPECTACULAR_SETTINGS = {
     # 👇 ESSENCIAL
     "SERVE_INCLUDE_SCHEMA": False,
 }
-
-
-STATIC_URL = "static/"
 
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY")

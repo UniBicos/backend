@@ -136,9 +136,7 @@ def handle_payment_succeeded(payment_intent):
 
         try:
             entregador = Entregadores.objects.get(id_stripe=entregador_stripe_id)
-            entregador.saldo_disponivel = (
-                entregador.saldo_disponivel or 0
-            ) + valor_entregador
+            entregador.saldo_disponivel = (entregador.saldo_disponivel or 0) + valor_entregador
             entregador.save()
             logger.info(f"Updated deliverer balance: {entregador.id_entregador}")
         except Entregadores.DoesNotExist:
@@ -211,9 +209,7 @@ def handle_dispute_created(charge):
             pedido.status_pedido = "CANCELADO"
             pedido.save()
 
-            logger.info(
-                f"Updated payment and order status due to dispute: {dispute_id}"
-            )
+            logger.info(f"Updated payment and order status due to dispute: {dispute_id}")
         except Pagamento.DoesNotExist:
             logger.warning(f"Payment not found for dispute: {dispute_id}")
 
