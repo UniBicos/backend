@@ -130,12 +130,6 @@ class LojasAdmin(DadosCadForm):
     search_fields = ["nome_fantasia", "id_usuario__nome"]
     autocomplete_fields = ["id_usuario"]
 
-    fieldsets = (
-        ("Loja", {"fields": ("nome_fantasia", "id_usuario")}),
-        ("Informações", {"fields": ("info_bancarias", "departamento", "localizacao")}),
-        ("Status", {"fields": ("aberto", "avaliacao")}),
-    )
-
 
 class EntregadoresAdmin(DadosCadForm):
     list_display = ("id_usuario", "aberto", "saldo_disponivel", "avaliacao")
