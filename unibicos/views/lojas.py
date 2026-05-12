@@ -3,6 +3,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from unibicos.models import Lojas, Produtos
+from rest_framework.permissions import IsAuthenticated
 from unibicos.serializers import LojasSerializer, ProdutosSerializer
 from unibicos.services.stripe import stripe
 
@@ -10,7 +11,7 @@ from unibicos.services.stripe import stripe
 class LojasViewSet(viewsets.ViewSet):
     queryset = Lojas.objects.all()
     serializer_class = LojasSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def list(self, request):
         queryset = Lojas.objects.all()

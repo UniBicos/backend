@@ -1,5 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from unibicos.models import Compradores
@@ -9,7 +10,7 @@ from unibicos.serializers import CompradoresSerializer
 class CompradoresViewSet(viewsets.ViewSet):
     queryset = Compradores.objects.all()
     serializer_class = CompradoresSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def list(self, request):
         queryset = Compradores.objects.all()
