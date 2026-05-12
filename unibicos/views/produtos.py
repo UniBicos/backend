@@ -1,14 +1,13 @@
 from django.db.models import Count, Value
 from django.db.models.functions import Coalesce
-from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from unibicos.models import Produtos, Lojas
 from unibicos.serializers import ProdutosSerializer
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from unibicos.models import Lojas, Produtos
@@ -16,7 +15,10 @@ from unibicos.serializers import ProdutosSerializer
 
 
 class ProdutosViewSet(viewsets.ViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    serializer_class = ProdutosSerializer
+    queryset = Produtos.objects.all()
+
     parser_classes = (MultiPartParser, FormParser)
 
     # =========================
@@ -40,7 +42,7 @@ class ProdutosViewSet(viewsets.ViewSet):
         data = serializer.data
 
         for item in data:
-            loja = Lojas.objects.get(id_loja=item["sellerId"])
+            loja = Lojas.objects.get(id_loja=item["id_loja"])
             item["loja"] = {
                 "id": loja.id_loja,
                 "id_usuario": loja.id_usuario.id,
@@ -67,7 +69,7 @@ class ProdutosViewSet(viewsets.ViewSet):
     # =========================
     def create(self, request):
         data = request.data.copy()
-        data["id_user_cad"] = request.user.id if request.user.is_authenticated else None
+        data["id_user_cad"] = request.user.id
 
         serializer = ProdutosSerializer(data=data)
 
@@ -87,7 +89,7 @@ class ProdutosViewSet(viewsets.ViewSet):
             return Response({"error": "Produto não encontrado"}, status=404)
 
         data = request.data.copy()
-        data["id_user_alt"] = request.user.id if request.user.is_authenticated else None
+        data["id_user_alt"] = request.user.id
 
         serializer = ProdutosSerializer(produto, data=data, partial=True)
 

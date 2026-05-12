@@ -17,14 +17,6 @@ from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
 )
-
-# 🔥 IMPORTE AS VIEWS DO CARRINHO
-from unibicos.views import (
-    get_carrinho,
-    adicionar_ao_carrinho,
-    remover_do_carrinho,
-    finalizar_carrinho,
-)
 from unibicos.services.webhook import stripe_webhook
 
 urlpatterns = [
@@ -45,17 +37,6 @@ urlpatterns = [
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger",
     ),
-    # ========================
-    # CARRINHO (SACOLA)
-    # ========================
-    path("api/carrinho/", get_carrinho, name="get_carrinho"),
-    path("api/carrinho/adicionar/", adicionar_ao_carrinho, name="adicionar_carrinho"),
-    path(
-        "api/carrinho/remover/<int:produto_id>/",
-        remover_do_carrinho,
-        name="remover_carrinho",
-    ),
-    path("api/carrinho/finalizar/", finalizar_carrinho, name="finalizar_carrinho"),
     # ========================
     # APP
     # ========================

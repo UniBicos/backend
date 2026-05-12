@@ -155,7 +155,6 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "UniBicos API",
     "DESCRIPTION": "API para o marketplace universitário UniBicos",
     "VERSION": "1.0.0",
-    # 👇 ESSENCIAL
     "SERVE_INCLUDE_SCHEMA": False,
 }
 

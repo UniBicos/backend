@@ -3,6 +3,7 @@ from django.urls import path
 
 from unibicos.views import (
     AuthViewSet,
+    CarrinhoViewSet,
     CategoriasViewSet,
     CompradoresViewSet,
     EntregadoresViewSet,
@@ -17,6 +18,7 @@ from unibicos.views import (
 
 router = routers.DefaultRouter()
 router.register(r"auth", AuthViewSet, basename="auth")
+router.register(r"carrinho", CarrinhoViewSet, basename="carrinho")
 router.register(r"categorias", CategoriasViewSet, basename="categorias")
 router.register(r"produtos", ProdutosViewSet, basename="produtos")
 router.register(r"pedidos", PedidosViewSet, basename="pedidos")
