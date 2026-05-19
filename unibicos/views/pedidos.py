@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from unibicos.models import Pedidos, PedidoProdutos, Produtos, Lojas
@@ -9,7 +9,7 @@ from unibicos.serializers import PedidosSerializer, PedidoProdutosSerializer, Lo
 class PedidosViewSet(viewsets.ViewSet):
     queryset = Pedidos.objects.all()
     serializer_class = PedidosSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def list(self, request):
         queryset = Pedidos.objects.all()

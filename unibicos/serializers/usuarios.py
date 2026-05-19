@@ -86,9 +86,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     agencia = serializers.CharField(
         max_length=10, required=False, allow_blank=True, allow_null=True
     )
-    conta = serializers.CharField(
-        max_length=20, required=False, allow_blank=True, allow_null=True
-    )
+    conta = serializers.CharField(max_length=20, required=False, allow_blank=True, allow_null=True)
     codigo_banco = serializers.CharField(
         max_length=10, required=False, allow_blank=True, allow_null=True
     )

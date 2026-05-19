@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from unibicos.models import Pagamento, Pedidos
 from unibicos.serializers import PagamentoSerializer
@@ -30,7 +30,7 @@ def _map_mp_status(status):
 class PagamentoViewSet(viewsets.ViewSet):
     queryset = Pagamento.objects.all()
     serializer_class = PagamentoSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def list(self, request):
         queryset = Pagamento.objects.all()
@@ -56,9 +56,7 @@ class PagamentoViewSet(viewsets.ViewSet):
 
         pagamento_existente = Pagamento.objects.filter(id_pedido=pedido).first()
         if pagamento_existente:
-            return Response(
-                {"error": "Pagamento já existe para este pedido"}, status=409
-            )
+            return Response({"error": "Pagamento já existe para este pedido"}, status=409)
 
         valor_total = request.data.get("valor", pedido.total_pedido)
         try:
@@ -158,9 +156,7 @@ def mercadopago_return(request):
     if preference_id:
         pagamento = Pagamento.objects.filter(id_intent=preference_id).first()
     if not pagamento and external_reference:
-        pagamento = Pagamento.objects.filter(
-            id_pedido__id_pedido=external_reference
-        ).first()
+        pagamento = Pagamento.objects.filter(id_pedido__id_pedido=external_reference).first()
 
     if not pagamento:
         return JsonResponse({"error": "Pagamento não encontrado"}, status=404)
