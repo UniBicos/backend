@@ -5,7 +5,6 @@ from unibicos.models import Usuario
 from unibicos.models import Compradores
 from unibicos.models import Lojas
 from unibicos.models import Entregadores
-from unibicos.services.stripe import stripe
 
 
 class UsuarioSerializer(serializers.ModelSerializer):
@@ -87,7 +86,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     agencia = serializers.CharField(
         max_length=10, required=False, allow_blank=True, allow_null=True
     )
-    conta = serializers.CharField(max_length=20, required=False, allow_blank=True, allow_null=True)
+    conta = serializers.CharField(
+        max_length=20, required=False, allow_blank=True, allow_null=True
+    )
     codigo_banco = serializers.CharField(
         max_length=10, required=False, allow_blank=True, allow_null=True
     )
@@ -122,9 +123,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             localizacao = validated_data.pop("localizacao", None)
             departamento = validated_data.pop("departamento", None)
 
-            agencia = validated_data.pop("agencia", None)
-            conta = validated_data.pop("conta", None)
-            codigo_banco = validated_data.pop("codigo_banco", None)
+            _ = validated_data.pop("agencia", None)
+            _ = validated_data.pop("conta", None)
+            _ = validated_data.pop("codigo_banco", None)
 
             user = Usuario.objects.create_user(**validated_data)
 
@@ -134,72 +135,22 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                 )  # Todo usuário que não seja PJ é um comprador potencial.
 
             elif role == "entregador":
-                if not agencia or not conta or not codigo_banco:
-                    raise serializers.ValidationError(
-                        "agencia, conta and codigo_banco are required for entregadores."
-                    )
-                account = stripe.Account.create(
-                    type="express",
-                    country="BR",
-                    email=user.email,
-                    business_type="individual",
-                    business_profile={"name": user.nome},
-                    metadata={"merchant_name": user.nome},
-                )
-                bank_account = stripe.Account.create_external_account(
-                    account.id,
-                    external_account={
-                        "object": "bank_account",
-                        "country": "BR",
-                        "currency": "brl",
-                        "routing_number": f"{codigo_banco}-{agencia}",
-                        "account_number": conta,
-                    },
-                    default_for_currency=True,
-                )
                 Entregadores.objects.create(
                     id_usuario=user,
                     id_user_cad=user,
-                    id_stripe=account.id,
-                    id_bancaria_stripe=bank_account.id,
                 )
 
             elif role == "vendedor":
-                if not agencia or not conta or not codigo_banco:
-                    raise serializers.ValidationError(
-                        "agencia, conta and codigo_banco are required for vendedores."
-                    )
                 if not nome_fantasia or not localizacao:
                     raise serializers.ValidationError(
                         "nome_fantasia and localizacao are required for vendedores."
                     )
-                account = stripe.Account.create(
-                    type="express",
-                    country="BR",
-                    email=user.email,
-                    business_type="individual",
-                    business_profile={"name": nome_fantasia},
-                    metadata={"merchant_name": user.nome},
-                )
-                bank_account = stripe.Account.create_external_account(
-                    account.id,
-                    external_account={
-                        "object": "bank_account",
-                        "country": "BR",
-                        "currency": "brl",
-                        "routing_number": f"{codigo_banco}-{agencia}",
-                        "account_number": conta,
-                    },
-                    default_for_currency=True,
-                )
                 Lojas.objects.create(
                     id_usuario=user,
                     id_user_cad=user,
                     nome_fantasia=nome_fantasia,
                     localizacao=localizacao,
                     departamento=departamento,
-                    id_stripe=account.id,
-                    id_bancaria_stripe=bank_account.id,
                 )
 
         return user

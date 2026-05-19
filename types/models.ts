@@ -59,8 +59,6 @@ export interface Compradores extends BaseModel {
 export interface Lojas extends BaseModel {
   id_loja: number
   id_usuario: number
-  id_stripe: string
-  id_bancaria_stripe: string
   nome_fantasia: string
   aberto: boolean
   departamento?: string | null
@@ -72,8 +70,6 @@ export interface Lojas extends BaseModel {
 export interface Entregadores extends BaseModel {
   id_entregador: number
   id_usuario: number
-  id_stripe: string
-  id_bancaria_stripe: string
   aberto: boolean
   saldo_disponivel: number
   avaliacao: number
@@ -101,7 +97,6 @@ export interface Pedidos extends BaseModel {
   id_cliente: number
   id_loja: number
   id_entregador?: number | null
-  id_stripe?: string | null
   taxa_entrega: number
   total_pedido: number
   status_pedido: StatusPedido

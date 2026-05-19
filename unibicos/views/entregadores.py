@@ -5,7 +5,6 @@ from rest_framework.response import Response
 
 from unibicos.models import Entregadores
 from unibicos.serializers import EntregadoresSerializer
-from unibicos.services.stripe import stripe
 
 
 class EntregadoresViewSet(viewsets.ViewSet):
@@ -27,15 +26,14 @@ class EntregadoresViewSet(viewsets.ViewSet):
 
     def create(self, request):
         request.data["id_user_cad"] = request.user.id
-        user = request.user
 
         try:
-            request.data["id_stripe"] = 0
-            request.data["id_bancaria_stripe"] = 0
             serializer = EntregadoresSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response({"message": "Entregador cadastrado com sucesso"}, status=201)
+                return Response(
+                    {"message": "Entregador cadastrado com sucesso"}, status=201
+                )
 
             return Response(serializer.errors, status=400)
         except Exception as e:

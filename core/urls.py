@@ -17,12 +17,12 @@ from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
 )
-from unibicos.services.webhook import stripe_webhook
+from unibicos.views.pagamentos import mercadopago_return
 
 urlpatterns = [
     # Admin
     path("admin/", admin.site.urls),
-    path("webhook/stripe/", stripe_webhook, name="stripe_webhook"),
+    path("webhook/mercadopago/retorno/", mercadopago_return, name="mercadopago_return"),
     # ========================
     # AUTH (JWT)
     # ========================

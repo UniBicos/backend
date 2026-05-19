@@ -1,11 +1,9 @@
 from rest_framework import viewsets
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from unibicos.models import Lojas, Produtos
 from rest_framework.permissions import IsAuthenticated
 from unibicos.serializers import LojasSerializer, ProdutosSerializer
-from unibicos.services.stripe import stripe
 
 
 class LojasViewSet(viewsets.ViewSet):
@@ -30,10 +28,7 @@ class LojasViewSet(viewsets.ViewSet):
 
     def create(self, request):
         request.data["id_user_cad"] = request.user.id
-        user = request.user
         try:
-            request.data["id_stripe"] = 0
-            request.data["id_bancaria_stripe"] = 0
             serializer = LojasSerializer(data=request.data)
 
             if serializer.is_valid():
