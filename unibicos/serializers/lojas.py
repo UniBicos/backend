@@ -14,9 +14,9 @@ class LojasSerializer(serializers.ModelSerializer):
             "id": obj.id_loja,
             "id_usuario": obj.id_usuario.id,
             "nome_fantasia": obj.nome_fantasia,
-            "informal": obj.cnpj == "",
+            "informal": obj.id_usuario.cnpj if obj.id_usuario.cnpj else "",
             "localizacao": obj.localizacao,
-            "imagem": "",
+            "imagem": obj.imagem.url if obj.imagem else "",
             "avaliacao": obj.avaliacao,
             "instituicao": (
                 InstituicoesEnsinoSerializer(obj.id_usuario.id_instituicao).data

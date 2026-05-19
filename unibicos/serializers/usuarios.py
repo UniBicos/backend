@@ -50,6 +50,25 @@ class UsuarioSerializer(serializers.ModelSerializer):
         return data
 
 
+class UsuarioUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Usuario
+        fields = [
+            "nome",
+            "email",
+            "telefone",
+            "cpf",
+            "cnpj",
+            "matricula",
+            "id_instituicao",
+        ]
+        extra_kwargs = {
+            "email": {"required": False},
+            "nome": {"required": False},
+            "telefone": {"required": False},
+        }
+
+
 class UserRegistrationSerializer(serializers.ModelSerializer):
     role = serializers.ChoiceField(
         choices=["comprador", "vendedor", "entregador"], write_only=True

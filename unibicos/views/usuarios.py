@@ -1,11 +1,15 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from unibicos.models import Usuario
-from unibicos.serializers import UsuarioSerializer, UserRegistrationSerializer
+from unibicos.serializers import (
+    UsuarioSerializer,
+    UserRegistrationSerializer,
+    UsuarioUpdateSerializer,
+)
 
 
 class UsuariosViewSet(viewsets.ViewSet):
@@ -18,7 +22,7 @@ class UsuariosViewSet(viewsets.ViewSet):
 
     def retrieve(self, request, pk=None):
         try:
-            usuario = Usuario.objects.get(id_usuario=pk)
+            usuario = Usuario.objects.get(id=pk)
         except Usuario.DoesNotExist:
             return Response({"error": "Usuário não encontrado"}, status=404)
 
@@ -42,11 +46,11 @@ class UsuariosViewSet(viewsets.ViewSet):
 
     def partial_update(self, request, pk=None):
         try:
-            usuario = Usuario.objects.get(id_usuario=pk)
+            usuario = Usuario.objects.get(id=pk)
         except Usuario.DoesNotExist:
             return Response({"error": "Usuário não encontrado"}, status=404)
 
-        serializer = UsuarioSerializer(usuario, data=request.data, partial=True)
+        serializer = UsuarioUpdateSerializer(usuario, data=request.data, partial=True)
 
         if serializer.is_valid():
             user = serializer.save()
@@ -63,7 +67,7 @@ class UsuariosViewSet(viewsets.ViewSet):
 
     def destroy(self, request, pk=None):
         try:
-            usuario = Usuario.objects.get(id_usuario=pk)
+            usuario = Usuario.objects.get(id=pk)
         except Usuario.DoesNotExist:
             return Response({"error": "Usuário não encontrado"}, status=404)
 
@@ -91,3 +95,21 @@ class UsuariosViewSet(viewsets.ViewSet):
             },
             status=201,
         )
+
+    @action(detail=True, methods=["post"], url_path="change-password")
+    def change_password(self, request, pk=None):
+        try:
+            usuario = Usuario.objects.get(id=pk)
+        except Usuario.DoesNotExist:
+            return Response({"error": "Usuário não encontrado"}, status=404)
+
+        old_password = request.data.get("old_password")
+        new_password = request.data.get("new_password")
+
+        if not usuario.check_password(old_password):
+            return Response({"error": "Senha atual incorreta"}, status=400)
+
+        usuario.set_password(new_password)
+        usuario.save()
+
+        return Response({"message": "Senha alterada com sucesso"}, status=200)

@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from unibicos.models import Pedidos, PedidoProdutos, Produtos, Lojas
-from unibicos.serializers import PedidosSerializer, PedidoProdutosSerializer
+from unibicos.serializers import PedidosSerializer, PedidoProdutosSerializer, LojasSerializer
 
 
 class PedidosViewSet(viewsets.ViewSet):
@@ -29,12 +29,16 @@ class PedidosViewSet(viewsets.ViewSet):
             queryset = queryset.filter(status_pedido=status_pedido)
 
         data = PedidosSerializer(queryset, many=True).data
-        pedido_produtos = PedidoProdutos.objects.filter(id_pedido=item["id"])
-        item["produtos"] = pedido_produtos
-        if not id_loja:
-            for item in data:
-                loja = Lojas.objects.get(id_loja=item["loja_id"])
-                item["loja"] = loja
+        for item in data:
+            pedido_produtos = PedidoProdutos.objects.filter(id_pedido=item["id"])
+            item["produtos"] = PedidoProdutosSerializer(pedido_produtos, many=True).data
+
+            if not id_loja:
+                try:
+                    loja = Lojas.objects.get(id_loja=item["id_loja"])
+                    item["loja"] = LojasSerializer(loja).data
+                except Lojas.DoesNotExist:
+                    item["loja"] = None
 
         return Response(data)
 

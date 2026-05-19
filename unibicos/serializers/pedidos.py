@@ -12,13 +12,13 @@ class PedidosSerializer(serializers.ModelSerializer):
     def to_representation(self, obj):
         return {
             "id": obj.id_pedido,
-            "id_cliente": obj.id_cliente.id_usuario,
+            "id_cliente": obj.id_cliente.id_usuario.id,
             "id_loja": obj.id_loja.id_loja,
-            "id_entregador": (obj.id_entregador.id_usuario if obj.id_entregador else None),
+            "id_entregador": (obj.id_entregador.id_usuario.id if obj.id_entregador else None),
             "status": obj.status_pedido,
-            "total": obj.total,
-            "created_at": obj.created_at,
-            "updated_at": obj.updated_at,
+            "total": obj.total_pedido,
+            "created_at": obj.dt_cad,
+            "updated_at": obj.dt_alt,
         }
 
 
@@ -31,8 +31,8 @@ class PedidoProdutosSerializer(serializers.ModelSerializer):
 
         return {
             "id_pedido_produto": obj.id_pedido_produto,
-            "id_pedido": PedidosSerializer(Pedidos.objects.get(pk=obj.id_pedido.pk)),
-            "id_produto": ProdutosSerializer(Produtos.objects.get(pk=obj.id_produto.pk)),
+            "id_pedido": PedidosSerializer(Pedidos.objects.get(pk=obj.id_pedido.pk)).data,
+            "id_produto": ProdutosSerializer(Produtos.objects.get(pk=obj.id_produto.pk)).data,
             "quantidade": obj.quantidade,
             "preco_un": obj.preco_un,
         }

@@ -182,6 +182,7 @@ class Lojas(BaseModel):
         default=5.0,
     )
     saldo_disponivel = models.IntegerField(default=0)
+    imagem = models.ImageField(upload_to="produtos/", null=True, blank=True)
 
     class Meta:
         db_table = "tb_lojas"
