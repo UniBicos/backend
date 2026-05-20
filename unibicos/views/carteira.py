@@ -34,7 +34,7 @@ class CarteiraViewSet(viewsets.ViewSet):
         saques = SaquesLoja.objects.filter(id_loja=loja)
         return Response(SaquesLojaSerializer(saques, many=True).data)
 
-    @action(detail=False, methods=["post"], url_path="solicitar-saque")
+    @action(detail=False, methods=["post"], url_path="solicitar_saque")
     def solicitar_saque(self, request):
         serializer = SolicitarSaqueSerializer(data=request.data, context={"request": request})
         if not serializer.is_valid():
