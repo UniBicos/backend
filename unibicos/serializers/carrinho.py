@@ -6,7 +6,7 @@ from ..models import Pedidos, PedidoProdutos, Produtos
 class ProdutoCarrinhoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Produtos
-        fields = ["id_produto", "nome_produto", "preco", "imagem", "descricao"]
+        fields = ["id_produto", "nome", "preco", "imagem", "descricao"]
 
 
 class ItemCarrinhoSerializer(serializers.ModelSerializer):

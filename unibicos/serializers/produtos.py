@@ -13,10 +13,10 @@ class ProdutosSerializer(serializers.ModelSerializer):
         loja = Lojas.objects.get(id_loja=obj.id_loja.id_loja)
         return {
             "id": obj.id_produto,
-            "nome": obj.nome_produto,
+            "nome": obj.nome,
             "categoria": {
                 "id": categoria.id_categoria,
-                "name": categoria.nome_categoria,
+                "nome": categoria.nome_categoria,
                 "icon": categoria.icon,
             },
             "descricao": obj.descricao,

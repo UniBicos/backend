@@ -144,13 +144,13 @@ class CategoriasAdmin(DadosCadForm):
 
 
 class ProdutosAdmin(DadosCadForm):
-    list_display = ("nome_produto", "id_loja", "preco", "disponivel")
+    list_display = ("nome", "id_loja", "preco", "disponivel")
     list_filter = ("disponivel", "id_categoria")
-    search_fields = ["nome_produto"]
+    search_fields = ["nome"]
     autocomplete_fields = ["id_loja", "id_categoria"]
 
     fieldsets = (
-        ("Produto", {"fields": ("nome_produto", "descricao", "imagem")}),
+        ("Produto", {"fields": ("nome", "descricao", "imagem")}),
         ("Relacionamentos", {"fields": ("id_loja", "id_categoria")}),
         ("Venda", {"fields": ("preco", "disponivel")}),
     )
@@ -199,7 +199,7 @@ class PedidosAdmin(DadosCadForm):
 
 class PedidoProdutosAdmin(DadosCadForm):
     list_display = ("id_pedido", "id_produto", "quantidade", "preco_un")
-    search_fields = ["id_pedido__id_pedido", "id_produto__nome_produto"]
+    search_fields = ["id_pedido__id_pedido", "id_produto__nome"]
     autocomplete_fields = ["id_pedido", "id_produto"]
 
 

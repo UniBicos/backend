@@ -57,7 +57,7 @@ class ProdutoTestCase(APITestCase):
         )
 
         data = {
-            "nome_produto": "Coxinha",
+            "nome": "Coxinha",
             "descricao": "Top",
             "preco": 10,
             "id_loja": self.loja.id_loja,

@@ -230,19 +230,19 @@ class Produtos(BaseModel):
     id_produto = models.AutoField(primary_key=True)
     id_loja = models.ForeignKey(Lojas, on_delete=models.CASCADE, related_name="produtos")
     id_categoria = models.ForeignKey(Categorias, on_delete=models.CASCADE)
-    nome_produto = models.CharField(max_length=200)
+    nome = models.CharField(max_length=200)
     imagem = models.ImageField(upload_to="produtos/", null=True, blank=True)
     descricao = models.CharField(max_length=600)
-    preco = models.IntegerField(default=0)
+    preco = models.FloatField(default=0)
     disponivel = models.BooleanField(default=False)
 
     class Meta:
         db_table = "tb_produtos"
-        ordering = ["nome_produto"]
+        ordering = ["nome"]
         verbose_name_plural = "Produtos"
 
     def __str__(self):
-        return self.nome_produto
+        return self.nome
 
 
 class Pedidos(BaseModel):
@@ -252,8 +252,8 @@ class Pedidos(BaseModel):
     id_entregador = models.ForeignKey(
         Entregadores, on_delete=models.CASCADE, null=True, blank=True
     )
-    taxa_entrega = models.IntegerField(default=0)
-    total_pedido = models.IntegerField(default=0)
+    taxa_entrega = models.FloatField(default=0)
+    total_pedido = models.FloatField(default=0)
     status_pedido = models.CharField(
         max_length=20, default="CRIADO", choices=status_pedido_choices
     )
@@ -282,7 +282,7 @@ class PedidoProdutos(BaseModel):
     id_pedido = models.ForeignKey(Pedidos, on_delete=models.CASCADE)
     id_produto = models.ForeignKey(Produtos, on_delete=models.CASCADE, related_name="itens_pedido")
     quantidade = models.IntegerField(default=1)
-    preco_un = models.IntegerField(default=0)
+    preco_un = models.FloatField(default=0)
 
     class Meta:
         db_table = "tb_pedido_produtos"

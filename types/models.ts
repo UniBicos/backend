@@ -85,7 +85,7 @@ export interface Produtos extends BaseModel {
   id_produto: number
   id_loja: number
   id_categoria: number
-  nome_produto: string
+  nome: string
   imagem: string
   descricao: string
   preco: number

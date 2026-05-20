@@ -34,7 +34,7 @@ class ProdutosViewSet(viewsets.ViewSet):
         if id_loja:
             queryset = queryset.filter(id_loja=id_loja)
         if query:
-            queryset = queryset.filter(nome_produto__icontains=query)
+            queryset = queryset.filter(nome__icontains=query)
         if category:
             queryset = queryset.filter(id_categoria=category)
 
@@ -178,7 +178,7 @@ class ProdutosViewSet(viewsets.ViewSet):
             if categoria.id_categoria not in categories:
                 categories[categoria.id_categoria] = {
                     "id": categoria.id_categoria,
-                    "name": categoria.nome_categoria,
+                    "nome": categoria.nome_categoria,
                     "icon": categoria.icon,
                     "products": [],
                 }
