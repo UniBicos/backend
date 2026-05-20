@@ -130,12 +130,12 @@ class ProdutosViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=["get"])
     def stores_with_products(self, request):
-        lojas = Lojas.objects.all()
+        lojas = Lojas.objects.filter(aberto=True)
 
         resultado = []
 
         for loja in lojas:
-            produtos = Produtos.objects.filter(id_loja=loja.id_loja)
+            produtos = Produtos.objects.filter(id_loja=loja.id_loja, disponivel=True)
             institution_name = (
                 loja.id_usuario.id_instituicao.sigla
                 if loja.id_usuario and loja.id_usuario.id_instituicao

@@ -24,4 +24,5 @@ class LojasSerializer(serializers.ModelSerializer):
                 else None
             ),
             "departamento": obj.departamento,
+            "saldo_disponivel": obj.saldo_disponivel,
         }
