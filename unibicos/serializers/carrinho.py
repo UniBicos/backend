@@ -40,6 +40,9 @@ class CarrinhoSerializer(serializers.ModelSerializer):
             "total",
         ]
 
+    def get_id(self, obj):
+        return obj.id_pedido
+
     def get_itens(self, obj):
         itens = PedidoProdutos.objects.filter(id_pedido=obj)
         return ItemCarrinhoSerializer(itens, many=True).data
