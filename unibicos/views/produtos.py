@@ -148,18 +148,14 @@ class ProdutosViewSet(viewsets.ViewSet):
                     "id_usuario": loja.id_usuario.id,
                     "nome_fantasia": loja.nome_fantasia,
                     "informal": False,
-                    "localizacao": {
-                        "block": loja.localizacao or "",
-                        "room": "",
-                        "reference": "",
-                    },
+                    "localizacao": loja.localizacao or "",
                     "imagem": "",
                     "avaliacao": loja.avaliacao,
                     "instituicao": institution_name,
                     "departamento": loja.departamento,
                     "aberto": loja.aberto,
                     "saldo_disponivel": loja.saldo_disponivel,
-                    "products": ProdutosInfoSerializer(produtos, many=True).data,
+                    "produtos": ProdutosInfoSerializer(produtos, many=True).data,
                 }
             )
 
