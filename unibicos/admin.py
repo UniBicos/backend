@@ -13,6 +13,7 @@ from .models import (
     PedidoProdutos,
     Pedidos,
     Produtos,
+    SaquesLoja,
     Usuario,
 )
 
@@ -131,6 +132,13 @@ class LojasAdmin(DadosCadForm):
     autocomplete_fields = ["id_usuario"]
 
 
+class SaquesLojaAdmin(DadosCadForm):
+    list_display = ("id_saque", "id_loja", "valor", "status", "dt_cad")
+    list_filter = ("status",)
+    search_fields = ["id_loja__nome_fantasia", "pix"]
+    autocomplete_fields = ["id_loja"]
+
+
 class EntregadoresAdmin(DadosCadForm):
     list_display = ("id_usuario", "aberto", "saldo_disponivel", "avaliacao")
     list_filter = ("aberto",)
@@ -215,6 +223,7 @@ admin.site.register(Usuario, UsuarioAdmin)
 admin.site.register(Movimentacoes, MovimentacoesAdmin)
 admin.site.register(Compradores, CompradoresAdmin)
 admin.site.register(Lojas, LojasAdmin)
+admin.site.register(SaquesLoja, SaquesLojaAdmin)
 admin.site.register(Entregadores, EntregadoresAdmin)
 admin.site.register(Categorias, CategoriasAdmin)
 admin.site.register(Produtos, ProdutosAdmin)

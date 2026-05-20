@@ -31,6 +31,14 @@ status_pagamento_choices = [
     ("CANCELADO", "CANCELADO"),
 ]
 
+status_saque_choices = [
+    ("PENDENTE", "PENDENTE"),
+    ("PROCESSANDO", "PROCESSANDO"),
+    ("CONCLUIDO", "CONCLUIDO"),
+    ("CANCELADO", "CANCELADO"),
+    ("FALHOU", "FALHOU"),
+]
+
 
 def valida_cpf(value):
     if not re.match(r"^\d{11}$", value):
@@ -189,6 +197,24 @@ class Lojas(BaseModel):
 
     def __str__(self):
         return self.nome_fantasia
+
+
+class SaquesLoja(BaseModel):
+    id_saque = models.AutoField(primary_key=True)
+    id_loja = models.ForeignKey(Lojas, on_delete=models.CASCADE, related_name="saques")
+    pix = models.CharField(max_length=200)
+    valor = models.IntegerField()
+    status = models.CharField(
+        max_length=20, default="PENDENTE", choices=status_saque_choices
+    )
+
+    class Meta:
+        db_table = "tb_saques_loja"
+        ordering = ["-dt_cad"]
+        verbose_name_plural = "Saques da Loja"
+
+    def __str__(self):
+        return f"{self.id_loja} - {self.valor} - {self.status}"
 
 
 class Entregadores(BaseModel):

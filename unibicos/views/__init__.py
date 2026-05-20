@@ -10,3 +10,4 @@ from .pedidos import *
 from .produtos import *
 from .usuarios import *
 from .carrinho import *
+from .carteira import *

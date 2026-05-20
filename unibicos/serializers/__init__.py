@@ -9,3 +9,4 @@ from .produtos import *
 from .pedidos import *
 from .usuarios import *
 from .carrinho import *
+from .carteira import *
