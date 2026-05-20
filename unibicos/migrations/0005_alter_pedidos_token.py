@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('unibicos', '0004_alter_produtos_options_and_more'),
+        ("unibicos", "0004_alter_produtos_options_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='pedidos',
-            name='token',
+            model_name="pedidos",
+            name="token",
             field=models.CharField(max_length=4),
         ),
     ]

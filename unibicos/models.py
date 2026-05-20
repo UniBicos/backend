@@ -297,7 +297,7 @@ class PedidoProdutos(BaseModel):
 class Pagamento(BaseModel):
     id_pagamento = models.AutoField(primary_key=True)
     id_pedido = models.OneToOneField(Pedidos, on_delete=models.CASCADE)
-    id_intent = models.CharField(max_length=200, unique=True)
+    id_intent = models.CharField(max_length=200, unique=True, null=True, blank=True)
     status_pagamento = models.CharField(
         max_length=20, default="AGUARDANDO_PAGAMENTO", choices=status_pagamento_choices
     )

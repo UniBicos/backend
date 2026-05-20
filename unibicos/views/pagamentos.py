@@ -1,4 +1,5 @@
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from django.db import transaction
 
 from django.http import JsonResponse
 from django.urls import reverse
@@ -54,57 +55,57 @@ class PagamentoViewSet(viewsets.ViewSet):
         except Pedidos.DoesNotExist:
             return Response({"error": "Pedido não encontrado"}, status=404)
 
-        pagamento_existente = Pagamento.objects.filter(id_pedido=pedido).first()
-        if pagamento_existente:
-            return Response({"error": "Pagamento já existe para este pedido"}, status=409)
+        with transaction.atomic():
+            pagamento, created = Pagamento.objects.get_or_create(
+                id_pedido=pedido, defaults={"status_pagamento": "AGUARDANDO_PAGAMENTO"}
+            )
 
-        valor_total = request.data.get("valor", pedido.total_pedido)
-        try:
-            unit_price = _normalize_unit_price(valor_total)
-        except (InvalidOperation, TypeError, ValueError):
-            return Response({"error": "Valor inválido"}, status=400)
+            if pagamento.status_pagamento != "AGUARDANDO_PAGAMENTO":
+                return Response({"error": "Pagamento não pode ser iniciado"}, status=409)
 
-        title = request.data.get("title") or f"Pedido #{pedido.id_pedido}"
-        return_url = request.build_absolute_uri(reverse("mercadopago_return"))
-        back_urls = request.data.get("back_urls") or {
-            "success": return_url,
-            "failure": return_url,
-            "pending": return_url,
-        }
+            if pagamento.id_intent:
+                return Response({"error": "Pagamento já iniciado"}, status=409)
 
-        for key in ("success", "failure", "pending"):
-            if not back_urls.get(key):
-                back_urls[key] = return_url
+            valor_total = pedido.total_pedido
+            try:
+                unit_price = _normalize_unit_price(valor_total)
+            except (InvalidOperation, TypeError, ValueError):
+                return Response({"error": "Valor inválido"}, status=400)
 
-        try:
-            preference_data = {
-                "items": [
-                    {
-                        "title": title,
-                        "quantity": 1,
-                        "unit_price": unit_price,
-                    }
-                ],
-                "back_urls": back_urls,
-                "auto_return": "approved",
-                "external_reference": str(pedido.id_pedido),
+            title = request.data.get("title") or f"Pedido #{pedido.id_pedido}"
+            return_url = request.build_absolute_uri(reverse("mercadopago_return"))
+            back_urls = request.data.get("back_urls") or {
+                "success": return_url,
+                "failure": return_url,
+                "pending": return_url,
             }
 
-            preference_response = sdk.preference().create(preference_data)
-            preference = preference_response.get("response", {})
-            preference_id = preference.get("id")
-            if not preference_id:
-                return Response({"error": "Falha ao criar preferência"}, status=400)
+            for key in ("success", "failure", "pending"):
+                if not back_urls.get(key):
+                    back_urls[key] = return_url
 
-            pagamento_data = {
-                "id_pedido": pedido.id_pedido,
-                "id_intent": preference_id,
-                "status_pagamento": "AGUARDANDO_PAGAMENTO",
-            }
+            try:
+                preference_data = {
+                    "items": [
+                        {
+                            "title": title,
+                            "quantity": 1,
+                            "unit_price": unit_price,
+                        }
+                    ],
+                    "back_urls": back_urls,
+                    "auto_return": "approved",
+                    "external_reference": str(pedido.id_pedido),
+                }
 
-            serializer = PagamentoSerializer(data=pagamento_data)
-            if serializer.is_valid():
-                serializer.save()
+                preference_response = sdk.preference().create(preference_data)
+                preference = preference_response.get("response", {})
+                preference_id = preference.get("id")
+                if not preference_id:
+                    return Response({"error": "Falha ao criar preferência"}, status=400)
+
+                pagamento.id_intent = preference_id
+                pagamento.save()
 
                 return Response(
                     {
@@ -116,10 +117,8 @@ class PagamentoViewSet(viewsets.ViewSet):
                     status=201,
                 )
 
-            return Response(serializer.errors, status=400)
-
-        except Exception as e:
-            return Response({"error": str(e)}, status=400)
+            except Exception as e:
+                return Response({"error": str(e)}, status=400)
 
     def partial_update(self, request, pk=None):
         try:
