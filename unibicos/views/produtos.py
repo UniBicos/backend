@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from unibicos.models import Lojas, Produtos
-from unibicos.serializers import ProdutosSerializer
+from unibicos.serializers import ProdutosSerializer, ProdutosInfoSerializer
 
 
 class ProdutosViewSet(viewsets.ViewSet):
@@ -144,21 +144,22 @@ class ProdutosViewSet(viewsets.ViewSet):
 
             resultado.append(
                 {
-                    "id": loja.id_loja,
                     "id_loja": loja.id_loja,
-                    "userId": loja.id_usuario.id,
-                    "fantasyName": loja.nome_fantasia,
-                    "isInformal": False,
-                    "location": {
+                    "id_usuario": loja.id_usuario.id,
+                    "nome_fantasia": loja.nome_fantasia,
+                    "informal": False,
+                    "localizacao": {
                         "block": loja.localizacao or "",
                         "room": "",
                         "reference": "",
                     },
-                    "image": "",
-                    "rating": loja.avaliacao,
-                    "institution": institution_name,
-                    "department": loja.departamento,
-                    "products": ProdutosSerializer(produtos, many=True).data,
+                    "imagem": "",
+                    "avaliacao": loja.avaliacao,
+                    "instituicao": institution_name,
+                    "departamento": loja.departamento,
+                    "aberto": loja.aberto,
+                    "saldo_disponivel": loja.saldo_disponivel,
+                    "products": ProdutosInfoSerializer(produtos, many=True).data,
                 }
             )
 
