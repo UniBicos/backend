@@ -22,6 +22,8 @@ class ItemCarrinhoSerializer(serializers.ModelSerializer):
 
 
 class CarrinhoSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source="id_pedido", read_only=True)
+
     itens = serializers.SerializerMethodField()
     total = serializers.SerializerMethodField()
     loja_nome = serializers.CharField(source="id_loja.nome_fantasia", read_only=True)
@@ -29,7 +31,7 @@ class CarrinhoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pedidos
         fields = [
-            "id_pedido",
+            "id",
             "status_pedido",
             "total_pedido",
             "taxa_entrega",

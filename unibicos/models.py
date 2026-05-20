@@ -257,7 +257,7 @@ class Pedidos(BaseModel):
     status_pedido = models.CharField(
         max_length=20, default="CRIADO", choices=status_pedido_choices
     )
-    token = models.CharField(max_length=4, unique=True)
+    token = models.CharField(max_length=4)
     sala_entrega = models.CharField(max_length=50, null=True, blank=True)
     bloco_entrega = models.CharField(max_length=100, null=True, blank=True)
     descricao_local = models.CharField(max_length=600, null=True, blank=True)
