@@ -5,9 +5,11 @@ from unibicos.models import PedidoProdutos, Pedidos, Produtos
 
 
 class PedidosSerializer(serializers.ModelSerializer):
+    status = serializers.CharField(source="status_pedido", required=False)
+
     class Meta:
         model = Pedidos
-        fields = "__all__"
+        exclude = ["status_pedido"]
 
     def to_representation(self, obj):
         return {
